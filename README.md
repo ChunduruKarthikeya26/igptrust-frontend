@@ -1,60 +1,118 @@
 <div align="center">
-  <a href="https://your-domain.com">
-    <img src="https://raw.githubusercontent.com/tandpfun/skill-icons/main/icons/React-Dark.svg" alt="CMP Logo" height="80">
+
+  <!-- Animated Logo or Main Graphic Placeholder -->
+  <img src="https://raw.githubusercontent.com/tandpfun/skill-icons/main/icons/React-Dark.svg" alt="iCMP Logo" width="120" style="margin-bottom: 20px; animation: pulse 2s infinite;" />
+
+  <h1>✨ iCMP ✨</h1>
+
+  <!-- Animated Typing Subtitle -->
+  <a href="https://git.io/typing-svg">
+    <img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&weight=600&size=22&pause=1000&color=61DAFB&center=true&vCenter=true&width=500&lines=Intelligent+Management+Platform;Lightning+Fast+React+%2B+Vite;High-Performance+FastAPI+Backend;Fluid+Animations+%26+Interactions" alt="Typing SVG" />
   </a>
 
-  <h1 align="center">Project Nova | CMP</h1>
-
   <p align="center">
-    <strong>A high-performance, modern Management Platform built for scale and speed.</strong>
+    <strong>The ultimate, highly-interactive Management Platform built for the modern web.</strong>
   </p>
 
   <p align="center">
-    <img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React">
-    <img src="https://img.shields.io/badge/Vite-B73BFE?style=for-the-badge&logo=vite&logoColor=FFD62E" alt="Vite">
-    <img src="https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi" alt="FastAPI">
-    <img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python">
+    <!-- Clickable Dynamic Badges -->
+    <a href="https://reactjs.org/"><img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React"></a>
+    <a href="https://vitejs.dev/"><img src="https://img.shields.io/badge/Vite-B73BFE?style=for-the-badge&logo=vite&logoColor=FFD62E" alt="Vite"></a>
+    <a href="https://fastapi.tiangolo.com/"><img src="https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi&logoColor=white" alt="FastAPI"></a>
+    <a href="https://www.framer.com/motion/"><img src="https://img.shields.io/badge/Framer_Motion-0055FF?style=for-the-badge&logo=framer&logoColor=white" alt="Framer Motion"></a>
   </p>
+
 </div>
 
 ---
 
-## ⚡ Overview
+<div align="center">
+  <h3>👀 See it in Action</h3>
+  <!-- CRITICAL: Place your animated demo GIF here -->
+  <p><i>Drop your stunning, high-framerate screen recording here (assets/demo.gif) to showcase your UI animations!</i></p>
+  <img src="https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png" width="100%" alt="divider" />
+</div>
 
-Nova is a next-generation CMP designed to eliminate friction. With a lightning-fast React frontend powered by Vite and a highly concurrent Python/FastAPI backend, it delivers real-time data processing wrapped in a sharp, intuitive UI.
+## 🌌 The iCMP Experience
 
-![Platform Demo](assets/demo.gif)
+**iCMP** isn't just a tool; it's a visual experience. By combining the rendering speed of Vite with the fluidity of modern animation libraries, every interaction feels alive.
 
-## ✨ Core Features
+<details>
+  <summary><b>✨ Click to reveal: Why iCMP feels so good to use</b></summary>
+  
+  <br/>
+  
+  * 🌊 **Fluid Micro-interactions:** Buttons that spring, menus that glide, and dynamic cards.
+  * 🎭 **Seamless Transitions:** Zero layout shifts. Page changes are choreographed and smooth.
+  * ⚡ **Instantaneous Feedback:** Powered by FastAPI, data mutations update the UI in real-time with beautiful state animations.
+</details>
 
-* **⚡ Blazing Fast Architecture:** Vite-powered HMR and optimized React rendering for a seamless frontend experience.
-* **🔌 Asynchronous Backend:** High-performance API routing and data validation out-of-the-box with FastAPI and Pydantic.
-* **🎨 Fluid UI/UX:** Clean, modern, and edgy interface optimized for professional workflows.
-* **🔒 Secure & Scalable:** Enterprise-grade security standards with JWT authentication and scalable database architecture.
+<details>
+  <summary><b>⚙️ Click to reveal: Core Architecture</b></summary>
 
-## 🛠 Tech Stack
+  <br/>
 
-### Frontend
-* **Framework:** React 18
-* **Build Tool:** Vite
-* **Styling & Motion:** TailwindCSS, [Insert UI/Motion Library, e.g., Framer Motion / shadcn/ui]
-
-### Backend
-* **Framework:** FastAPI (Python 3.10+)
-* **Server:** Uvicorn
-* **Database:** [e.g., PostgreSQL / MongoDB]
+  * **Frontend:** React 18, Vite, TailwindCSS, Framer Motion (or AutoAnimate).
+  * **Backend:** FastAPI (Python), Uvicorn, Pydantic for strict data validation.
+  * **Auth:** Secure JWT-based asynchronous sessions.
+</details>
 
 ---
 
 ## 🚀 Quick Start
 
-Get the platform running locally in minutes.
+Launch the **iCMP** development environment locally with hot-module replacement and instant API reloading.
 
-### Prerequisites
-* Node.js (v18+)
-* Python (v3.10+)
+### 📋 Prerequisites
+* **Node.js** (v18+)
+* **Python** (v3.10+)
 
-### 1. Clone the repository
+
+
+### 2️⃣ Spin up the FastAPI Backend
 ```bash
-git clone [https://github.com/yourusername/nova-cmp.git](https://github.com/yourusername/nova-cmp.git)
-cd nova-cmp
+cd backend
+python -m venv venv
+
+# Activate Virtual Environment
+source venv/bin/activate  # Windows: `venv\Scripts\activate`
+pip install -r requirements.txt
+
+# Launch with Uvicorn auto-reload
+uvicorn main:app --reload
+```
+🔥 *API running at `http://localhost:8000` | Interactive Docs at `http://localhost:8000/docs`*
+
+### 3️⃣ Ignite the React + Vite Frontend
+Open a split terminal:
+```bash
+cd frontend
+npm install
+
+# Start the Vite HMR server
+npm run dev
+```
+✨ *Experience the UI at `http://localhost:5173`*
+
+---
+
+## 📂 Architecture Layout
+
+```text
+iCMP/
+├── ⚙️ backend/             # FastAPI Engine
+│   ├── app/               # Routers, schemas, and models
+│   ├── main.py            # API entry point
+│   └── requirements.txt   # Python deps
+├── 🎨 frontend/            # React + Vite UI
+│   ├── src/               # Animated components, hooks, pages
+│   ├── public/            # Assets (SVGs, GIFs, WebP)
+│   ├── package.json       # Node deps
+│   └── vite.config.js     # Vite compiler settings
+└── 📜 README.md            # You are here
+```
+
+<div align="center">
+  <img src="https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png" width="100%" alt="divider" />
+  <p>Fixed the UI with Passion.</p>
+</div>
