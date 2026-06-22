@@ -32,6 +32,7 @@ import PendingApprovals from './pages/PendingApprovals'
 import ConsentValidation from './pages/ConsentValidation'
 import ReconsentPage from "./pages/ReconsentPage"
 import LandingPage from "./components/LandingPage"
+import MainLanding from "./components/MainLanding"
 
 export default function App() {
   return (
@@ -41,6 +42,7 @@ export default function App() {
           <TooltipProvider>
             <Toaster position="top-right" toastOptions={{ style: { fontSize: "13px" } }} />
             <Routes>
+              <Route path="/main" element={<MainLanding />} />
             <Route path="/" element={<LandingPage />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
