@@ -1,0 +1,110 @@
+[
+  {
+    "id": 1,
+    "header": "Cookie Consent Banner",
+    "type": "Cover Page",
+    "status": "Done",
+    "target": "100",
+    "limit": "150",
+    "reviewer": "Eddie Lake"
+  },
+  {
+    "id": 2,
+    "header": "Privacy Policy Overview",
+    "type": "Executive Summary",
+    "status": "Done",
+    "target": "200",
+    "limit": "250",
+    "reviewer": "Jamik Tashpulatov"
+  },
+  {
+    "id": 3,
+    "header": "GDPR Compliance Section",
+    "type": "Technical Approach",
+    "status": "In Progress",
+    "target": "300",
+    "limit": "400",
+    "reviewer": "Assign reviewer"
+  },
+  {
+    "id": 4,
+    "header": "Data Retention Policy",
+    "type": "Narrative",
+    "status": "In Progress",
+    "target": "150",
+    "limit": "200",
+    "reviewer": "Eddie Lake"
+  },
+  {
+    "id": 5,
+    "header": "User Rights & Requests",
+    "type": "Capabilities",
+    "status": "Done",
+    "target": "120",
+    "limit": "180",
+    "reviewer": "Jamik Tashpulatov"
+  },
+  {
+    "id": 6,
+    "header": "Consent Audit Logs",
+    "type": "Focus Documents",
+    "status": "In Progress",
+    "target": "80",
+    "limit": "100",
+    "reviewer": "Assign reviewer"
+  },
+  {
+    "id": 7,
+    "header": "Third-Party Cookie Management",
+    "type": "Technical Approach",
+    "status": "Done",
+    "target": "250",
+    "limit": "300",
+    "reviewer": "Eddie Lake"
+  },
+  {
+    "id": 8,
+    "header": "Cookie Categories Definition",
+    "type": "Table of Contents",
+    "status": "Done",
+    "target": "50",
+    "limit": "75",
+    "reviewer": "Jamik Tashpulatov"
+  },
+  {
+    "id": 9,
+    "header": "Consent Renewal Schedule",
+    "type": "Design",
+    "status": "In Progress",
+    "target": "90",
+    "limit": "120",
+    "reviewer": "Assign reviewer"
+  },
+  {
+    "id": 10,
+    "header": "Regional Compliance Matrix",
+    "type": "Capabilities",
+    "status": "In Progress",
+    "target": "400",
+    "limit": "500",
+    "reviewer": "Eddie Lake"
+  },
+  {
+    "id": 11,
+    "header": "Cookie Scanner Integration",
+    "type": "Technical Approach",
+    "status": "Done",
+    "target": "175",
+    "limit": "200",
+    "reviewer": "Jamik Tashpulatov"
+  },
+  {
+    "id": 12,
+    "header": "Offline Consent Handling",
+    "type": "Narrative",
+    "status": "In Progress",
+    "target": "60",
+    "limit": "80",
+    "reviewer": "Assign reviewer"
+  }
+]

@@ -1,0 +1,10 @@
+import api from './axios'
+export const getCategories = (websiteId) => api.get(`/websites/${websiteId}/categories`)
+export const createCategory = (websiteId, data) => api.post(`/websites/${websiteId}/categories`, data)
+export const updateCategory = (categoryId, data) => api.put(`/categories/${categoryId}`, data)
+export const deleteCategory = (categoryId) => api.delete(`/categories/${categoryId}`)
+export const getCategory = (categoryId) => api.get(`/categories/${categoryId}`)
+export const getCookies = (categoryId) => api.get(`/categories/${categoryId}/cookies`)
+export const createCookie = (categoryId, data) => api.post(`/categories/${categoryId}/cookies`, data)
+export const updateCookie = (cookieId, data) => api.put(`/cookies/${cookieId}`, data)
+export const deleteCookie = (cookieId) => api.delete(`/cookies/${cookieId}`)

@@ -1,0 +1,313 @@
+import os
+import uuid
+from datetime import datetime
+
+from fastapi import APIRouter, Depends, HTTPException, Request, Query
+from sqlalchemy.orm import Session
+from sqlalchemy import desc, func as sqlfunc
+
+from database import get_db
+from models import Business
+from models.dpdp_compliance import Grievance, GrievanceEvent
+from schemas.grievance_schema import (
+    GrievanceCreate,
+    GrievanceStatusUpdate,
+    GrievanceResponse,
+    GrievanceFeedback,
+)
+from utils.auth import get_current_business, get_effective_business_id
+from utils.email import (
+    email_grievance_submitted,
+    email_grievance_status_update,
+    email_grievance_feedback_request,
+)
+
+router = APIRouter(prefix="/grievances", tags=["grievances"])
+website_router = APIRouter(tags=["website-grievances"])
+
+
+# ── Helper ────────────────────────────────────────────────────────────────────
+
+def _generate_reference_number() -> str:
+    import random
+    import string
+    chars = string.ascii_uppercase + string.digits
+    return "GRV-" + "".join(random.choices(chars, k=8))
+
+
+# ── Public: submit a new grievance ────────────────────────────────────────────
+
+@router.post("", response_model=GrievanceResponse)
+def submit_grievance(data: GrievanceCreate, db: Session = Depends(get_db)):
+    from models import Website
+
+    website = None
+    if data.website_id:
+        website = db.query(Website).filter(Website.id == data.website_id).first()
+        if not website:
+            raise HTTPException(status_code=404, detail="Website not found")
+
+    from datetime import timedelta
+
+    grievance = Grievance(
+        id=uuid.uuid4(),
+        reference_number=_generate_reference_number(),
+        website_id=data.website_id,
+        visitor_id=data.visitor_id,
+        complainant_name=data.complainant_name,
+        complainant_email=data.complainant_email,
+        category=data.category,
+        sub_category=data.sub_category,
+        description=data.description,
+        priority=data.priority or "normal",
+        status="submitted",
+        due_by=datetime.utcnow() + timedelta(days=30),
+    )
+
+    db.add(grievance)
+
+    db.add(GrievanceEvent(
+        grievance_id=grievance.id,
+        event_type="CREATED",
+        from_status=None,
+        to_status="submitted",
+        note="Grievance submitted by complainant",
+        performed_by=data.complainant_email or "visitor",
+        performed_by_type="complainant",
+    ))
+
+    db.commit()
+    db.refresh(grievance)
+
+    if data.complainant_email:
+        success, error = email_grievance_submitted(
+            to_email=data.complainant_email,
+            domain=website.domain if website else "our platform",
+            reference_number=grievance.reference_number,
+            category=data.category,
+            description=data.description,
+            due_by=grievance.due_by,
+        )
+        print(f"[EMAIL SUBMITTED] success={success}, error={error}")
+
+    return grievance
+
+
+# ── Business: list grievances for a website ───────────────────────────────────
+
+@website_router.get("/{website_id}/grievances", response_model=list[GrievanceResponse])
+def list_grievances(
+    website_id: uuid.UUID,
+    status: str = Query(None),
+    priority: str = Query(None),
+    category: str = Query(None),
+    page: int = Query(1, ge=1),
+    page_size: int = Query(20, ge=1, le=100),
+    db: Session = Depends(get_db),
+    current_business: Business = Depends(get_current_business),
+):
+    query = db.query(Grievance).filter(Grievance.website_id == website_id)
+
+    if status:
+        query = query.filter(Grievance.status == status)
+    if priority:
+        query = query.filter(Grievance.priority == priority)
+    if category:
+        query = query.filter(Grievance.category == category)
+
+    query = query.order_by(desc(Grievance.created_at))
+    total = query.count()
+    items = query.offset((page - 1) * page_size).limit(page_size).all()
+
+    return items
+
+
+# ── Business: get single grievance ────────────────────────────────────────────
+
+@router.get("/{grievance_id}", response_model=GrievanceResponse)
+def get_grievance(
+    grievance_id: uuid.UUID,
+    db: Session = Depends(get_db),
+    current_business: Business = Depends(get_current_business),
+):
+    grievance = db.query(Grievance).filter(Grievance.id == grievance_id).first()
+    if not grievance:
+        raise HTTPException(status_code=404, detail="Grievance not found")
+    return grievance
+
+
+# ── Business: update grievance status ────────────────────────────────────────
+
+@router.patch("/{grievance_id}/status", response_model=GrievanceResponse)
+def update_grievance_status(
+    grievance_id: uuid.UUID,
+    data: GrievanceStatusUpdate,
+    db: Session = Depends(get_db),
+    current_business: Business = Depends(get_current_business),
+):
+    grievance = db.query(Grievance).filter(Grievance.id == grievance_id).first()
+    if not grievance:
+        raise HTTPException(status_code=404, detail="Grievance not found")
+
+    from models import Website
+    website = db.query(Website).filter(Website.id == grievance.website_id).first()
+
+    old_status = grievance.status
+    grievance.status = data.status
+    grievance.updated_at = datetime.utcnow()
+
+    if data.assigned_to:
+        grievance.assigned_to = data.assigned_to
+    if data.resolution_summary:
+        grievance.resolution_summary = data.resolution_summary
+
+    if data.status == "escalated" and not grievance.escalated_at:
+        grievance.escalated_at = datetime.utcnow()
+    elif data.status == "resolved" and not grievance.resolved_at:
+        grievance.resolved_at = datetime.utcnow()
+    elif data.status == "closed" and not grievance.closed_at:
+        grievance.closed_at = datetime.utcnow()
+
+    db.add(GrievanceEvent(
+        grievance_id=grievance.id,
+        event_type="STATUS_CHANGED",
+        from_status=old_status,
+        to_status=data.status,
+        note=data.note or data.resolution_summary,
+        performed_by=current_business.email or "business",
+        performed_by_type="business",
+    ))
+
+    db.commit()
+    db.refresh(grievance)
+
+    domain = website.domain if website else current_business.name or "our platform"
+
+    try:
+        print(f"[DEBUG] status={data.status!r} email={grievance.complainant_email!r}")
+        if grievance.complainant_email:
+            success, error = email_grievance_status_update(
+                to_email=grievance.complainant_email,
+                domain=domain,
+                reference_number=grievance.reference_number,
+                new_status=data.status,
+                note=data.note or data.resolution_summary,
+            )
+            print(f"[EMAIL STATUS UPDATE] success={success}, error={error}")
+
+        if data.status == "resolved" and grievance.complainant_email:
+            base_url = os.getenv("FRONTEND_URL", "http://localhost:5173")
+            fb_success, fb_error = email_grievance_feedback_request(
+                to_email=grievance.complainant_email,
+                domain=domain,
+                reference_number=grievance.reference_number,
+                grievance_id=str(grievance.id),
+                base_url=base_url,
+            )
+            print(f"[EMAIL FEEDBACK REQUEST] success={fb_success}, error={fb_error}")
+    except Exception as e:
+        print(f"[EMAIL ERROR] {e}")
+
+    return grievance
+
+
+
+@website_router.patch("/{website_id}/grievances/{grievance_id}/status")
+def update_grievance_status_by_website(
+    website_id: uuid.UUID,
+    grievance_id: uuid.UUID,
+    data: GrievanceStatusUpdate,
+    db: Session = Depends(get_db),
+    current_business: Business = Depends(get_current_business),
+):
+    from models import Website
+    import os
+    grievance = db.query(Grievance).filter(Grievance.id == grievance_id).first()
+    if not grievance:
+        raise HTTPException(status_code=404, detail="Grievance not found")
+    website = db.query(Website).filter(Website.id == grievance.website_id).first()
+    old_status = grievance.status
+    grievance.status = data.status
+    grievance.updated_at = datetime.utcnow()
+    if data.assigned_to:
+        grievance.assigned_to = data.assigned_to
+    if data.resolution_summary:
+        grievance.resolution_summary = data.resolution_summary
+    if data.status == "escalated" and not grievance.escalated_at:
+        grievance.escalated_at = datetime.utcnow()
+    elif data.status == "resolved" and not grievance.resolved_at:
+        grievance.resolved_at = datetime.utcnow()
+    elif data.status == "closed" and not grievance.closed_at:
+        grievance.closed_at = datetime.utcnow()
+    db.add(GrievanceEvent(
+        grievance_id=grievance.id,
+        event_type="STATUS_CHANGED",
+        from_status=old_status,
+        to_status=data.status,
+        note=data.note or data.resolution_summary,
+        performed_by=current_business.email or "business",
+        performed_by_type="business",
+    ))
+    db.commit()
+    db.refresh(grievance)
+    domain = website.domain if website else current_business.name or "our platform"
+    try:
+        print(f"[DEBUG] status={data.status!r} email={grievance.complainant_email!r}")
+        if grievance.complainant_email:
+            success, error = email_grievance_status_update(
+                to_email=grievance.complainant_email,
+                domain=domain,
+                reference_number=grievance.reference_number,
+                new_status=data.status,
+                note=data.note or data.resolution_summary,
+            )
+            print(f"[EMAIL STATUS UPDATE] success={success}, error={error}")
+        if data.status == "resolved" and grievance.complainant_email:
+            base_url = os.getenv("FRONTEND_URL", "http://localhost:5173")
+            fb_success, fb_error = email_grievance_feedback_request(
+                to_email=grievance.complainant_email,
+                domain=domain,
+                reference_number=grievance.reference_number,
+                grievance_id=str(grievance.id),
+                base_url=base_url,
+            )
+            print(f"[EMAIL FEEDBACK REQUEST] success={fb_success}, error={fb_error}")
+    except Exception as e:
+        print(f"[EMAIL ERROR] {e}")
+    return grievance
+
+@website_router.post("/{website_id}/grievances", response_model=GrievanceResponse)
+def submit_grievance_by_website(
+    website_id: str,
+    data: GrievanceCreate,
+    db: Session = Depends(get_db),
+):
+    from models import Website
+    website = db.query(Website).filter(Website.id == website_id).first()
+    if not website:
+        raise HTTPException(status_code=404, detail="Website not found")
+    data.website_id = website_id
+    return submit_grievance(data, db)
+
+@router.post("/{grievance_id}/feedback")
+def submit_feedback_public(
+    grievance_id: str,
+    data: dict,
+    db: Session = Depends(get_db),
+):
+    from sqlalchemy import text as _t
+    row = db.execute(_t(
+        "SELECT reference_number FROM grievances WHERE id = :gid OR REPLACE(id,'-','') = :gid2"
+    ), {"gid": grievance_id, "gid2": grievance_id.replace("-","")}).fetchone()
+    if not row:
+        raise HTTPException(status_code=404, detail="Grievance not found")
+    db.execute(_t(
+        "UPDATE grievances SET feedback_rating = :rating, feedback_comment = :comment, updated_at = :now WHERE reference_number = :ref"
+    ), {
+        "rating": data.get("rating"),
+        "comment": data.get("comment"),
+        "now": __import__("datetime").datetime.utcnow().isoformat(),
+        "ref": row[0],
+    })
+    db.commit()
+    return {"message": "Feedback submitted successfully"}

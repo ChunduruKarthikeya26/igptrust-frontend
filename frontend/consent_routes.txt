@@ -1,0 +1,734 @@
+﻿from fastapi import APIRouter, Depends, HTTPException, Request, Query, BackgroundTasks
+from sqlalchemy.orm import Session
+from sqlalchemy import and_
+from typing import List, Optional
+from datetime import datetime, timedelta
+import csv
+import io
+import uuid
+import uuid as uuid_lib
+
+from fastapi.responses import StreamingResponse
+from database import get_db
+from models import Business, Website, ConsentLog, ConsentWithdrawal
+from models.consent_lifecycle import (
+    ConsentValidationLog,
+    ConsentUpdate,
+    ConsentRenewal,
+    ConsentExpiryNotification,
+)
+from schemas.consent import (
+    ConsentCreate,
+    ConsentWithdraw,
+    ConsentResponse,
+    ConsentValidationRequest,
+    ConsentValidationResponse,
+    ConsentUpdateRequest,
+    ConsentUpdateResponse,
+    ConsentRenewalRequest,
+    ConsentRenewalResponse,
+    ExpiringConsentItem,
+)
+from utils.auth import get_current_business, get_effective_business_id
+from utils.audit_helper import log_action
+
+router = APIRouter(tags=["Consents"])
+
+DEFAULT_CONSENT_VALIDITY_DAYS = 365
+RENEWAL_REMINDER_DAYS = 30
+
+
+def _get_website_by_key(widget_key: str, db: Session) -> Website:
+    website = db.query(Website).filter(Website.widget_key == widget_key).first()
+    if not website:
+        raise HTTPException(status_code=404, detail="Invalid widget key")
+    return website
+
+
+def _get_active_consent(website_id, visitor_id: str, db: Session) -> ConsentLog:
+    return (
+        db.query(ConsentLog)
+        .filter(
+            ConsentLog.website_id == website_id,
+            ConsentLog.visitor_id == visitor_id,
+            ConsentLog.is_withdrawn == False,
+        )
+        .order_by(ConsentLog.consented_at.desc())
+        .first()
+    )
+
+
+@router.post("/consents", response_model=ConsentResponse)
+def save_consent(data: ConsentCreate, request: Request, db: Session = Depends(get_db)):
+    website = _get_website_by_key(data.widget_key, db)
+    ip = data.ip_address or request.client.host
+
+    expires_at = datetime.utcnow() + timedelta(days=DEFAULT_CONSENT_VALIDITY_DAYS)
+
+    consent = ConsentLog(
+        website_id=website.id,
+        visitor_id=data.visitor_id,
+        consent_status=data.consent_status,
+        accepted_categories=data.accepted_categories,
+        rejected_categories=data.rejected_categories,
+        ip_address=ip,
+        user_agent=data.user_agent,
+        consent_method=data.consent_method,
+        consent_version=data.consent_version,
+        expires_at=expires_at,
+    )
+    db.add(consent)
+    db.commit()
+    db.refresh(consent)
+
+    from utils.audit_helper import create_consent_artifact
+    create_consent_artifact(db, consent)
+
+    log_action(
+        db=db,
+        action="CONSENT_GIVEN",
+        module="consent",
+        description=f"Consent given by visitor: {data.visitor_id}",
+        performed_by_type="visitor",
+        performed_by_id=data.visitor_id,
+        website_id=str(website.id),
+        ip_address=ip,
+        new_value={
+            "status": data.consent_status,
+            "accepted": data.accepted_categories,
+            "expires_at": expires_at.isoformat(),
+        },
+    )
+    return consent
+
+
+@router.post("/consents/validate", response_model=ConsentValidationResponse)
+def validate_consent(
+    data: ConsentValidationRequest,
+    request: Request,
+    db: Session = Depends(get_db),
+):
+    website = _get_website_by_key(data.widget_key, db)
+    ip = request.client.host
+
+    consent = _get_active_consent(website.id, data.visitor_id, db)
+
+    is_valid = False
+    failure_reason = None
+    consent_status_label = None
+    consented_at = None
+    expires_at = None
+
+    if not consent:
+        failure_reason = "not_found"
+        consent_status_label = "not_found"
+        message = "No active consent found for this visitor."
+    elif consent.is_withdrawn:
+        failure_reason = "withdrawn"
+        consent_status_label = "withdrawn"
+        message = "Consent has been withdrawn."
+    elif consent.expires_at and consent.expires_at < datetime.utcnow():
+        failure_reason = "expired"
+        consent_status_label = "expired"
+        consented_at = consent.consented_at
+        expires_at = consent.expires_at
+        message = "Consent has expired."
+    else:
+        accepted = consent.accepted_categories or {}
+        if data.purpose_id not in accepted and consent.consent_status != "accepted_all":
+            failure_reason = "purpose_mismatch"
+            consent_status_label = "active"
+            consented_at = consent.consented_at
+            expires_at = consent.expires_at
+            message = f"Consent not granted for purpose: {data.purpose_id}"
+        else:
+            is_valid = True
+            consent_status_label = "active"
+            consented_at = consent.consented_at
+            expires_at = consent.expires_at
+            message = "Consent is valid."
+
+    validation_log = ConsentValidationLog(
+        website_id=website.id,
+        visitor_id=data.visitor_id,
+        purpose_id=data.purpose_id,
+        is_valid=is_valid,
+        failure_reason=failure_reason,
+        requested_by=data.requested_by,
+        ip_address=ip,
+    )
+    db.add(validation_log)
+    db.commit()
+
+    log_action(
+        db=db,
+        action="CONSENT_VALIDATED",
+        module="consent",
+        description=f"Validation {'passed' if is_valid else 'failed'} for visitor {data.visitor_id}, purpose: {data.purpose_id}",
+        performed_by_type="data_fiduciary",
+        performed_by_id=data.requested_by,
+        website_id=str(website.id),
+        ip_address=ip,
+        new_value={"is_valid": is_valid, "failure_reason": failure_reason},
+    )
+
+    return ConsentValidationResponse(
+        is_valid=is_valid,
+        visitor_id=data.visitor_id,
+        purpose_id=data.purpose_id,
+        consent_status=consent_status_label,
+        failure_reason=failure_reason,
+        consented_at=consented_at,
+        expires_at=expires_at,
+        message=message,
+    )
+
+
+@router.post("/consents/update", response_model=ConsentUpdateResponse)
+def update_consent(
+    data: ConsentUpdateRequest,
+    request: Request,
+    db: Session = Depends(get_db),
+):
+    website = _get_website_by_key(data.widget_key, db)
+    ip = data.ip_address or request.client.host
+
+    consent = _get_active_consent(website.id, data.visitor_id, db)
+    if not consent:
+        raise HTTPException(status_code=404, detail="No active consent found to update.")
+
+    previous_status = consent.consent_status
+    previous_categories = consent.accepted_categories
+
+    update_record = ConsentUpdate(
+        consent_log_id=consent.id,
+        website_id=website.id,
+        visitor_id=data.visitor_id,
+        previous_status=previous_status,
+        new_status=data.new_status,
+        previous_categories=previous_categories,
+        new_categories=data.accepted_categories,
+        update_reason=data.update_reason,
+        ip_address=ip,
+    )
+    db.add(update_record)
+
+    consent.consent_status = data.new_status
+    consent.accepted_categories = data.accepted_categories
+    consent.rejected_categories = data.rejected_categories
+
+    db.commit()
+    db.refresh(update_record)
+
+    log_action(
+        db=db,
+        action="CONSENT_UPDATED",
+        module="consent",
+        description=f"Consent updated by visitor: {data.visitor_id}",
+        performed_by_type="visitor",
+        performed_by_id=data.visitor_id,
+        website_id=str(website.id),
+        ip_address=ip,
+        old_value={"status": previous_status, "categories": previous_categories},
+        new_value={"status": data.new_status, "categories": data.accepted_categories},
+    )
+
+    return ConsentUpdateResponse(
+        id=update_record.id,
+        consent_log_id=consent.id,
+        visitor_id=data.visitor_id,
+        previous_status=previous_status,
+        new_status=data.new_status,
+        updated_at=update_record.updated_at,
+        message="Consent updated successfully.",
+    )
+
+
+@router.post("/consents/renew", response_model=ConsentRenewalResponse)
+def renew_consent(
+    data: ConsentRenewalRequest,
+    request: Request,
+    db: Session = Depends(get_db),
+):
+    website = _get_website_by_key(data.widget_key, db)
+    ip = data.ip_address or request.client.host
+
+    consent = (
+        db.query(ConsentLog)
+        .filter(
+            ConsentLog.website_id == website.id,
+            ConsentLog.visitor_id == data.visitor_id,
+            ConsentLog.is_withdrawn == False,
+        )
+        .order_by(ConsentLog.consented_at.desc())
+        .first()
+    )
+
+    if not consent:
+        raise HTTPException(status_code=404, detail="No consent found to renew.")
+
+    previous_expiry = consent.expires_at
+    new_expiry = datetime.utcnow() + timedelta(days=data.extend_days)
+
+    renewal_count = (
+        db.query(ConsentRenewal)
+        .filter(ConsentRenewal.consent_log_id == consent.id)
+        .count()
+    ) + 1
+
+    renewal = ConsentRenewal(
+        consent_log_id=consent.id,
+        website_id=website.id,
+        visitor_id=data.visitor_id,
+        previous_expiry=previous_expiry,
+        new_expiry=new_expiry,
+        renewal_count=renewal_count,
+        renewed_categories=data.renewed_categories or consent.accepted_categories,
+        ip_address=ip,
+    )
+    db.add(renewal)
+
+    consent.expires_at = new_expiry
+    if data.renewed_categories:
+        consent.accepted_categories = data.renewed_categories
+
+    db.commit()
+    db.refresh(renewal)
+
+    log_action(
+        db=db,
+        action="CONSENT_RENEWED",
+        module="consent",
+        description=f"Consent renewed by visitor: {data.visitor_id} (renewal #{renewal_count})",
+        performed_by_type="visitor",
+        performed_by_id=data.visitor_id,
+        website_id=str(website.id),
+        ip_address=ip,
+        old_value={"expires_at": previous_expiry.isoformat() if previous_expiry else None},
+        new_value={"expires_at": new_expiry.isoformat(), "renewal_count": renewal_count},
+    )
+
+    return ConsentRenewalResponse(
+        id=renewal.id,
+        consent_log_id=consent.id,
+        visitor_id=data.visitor_id,
+        previous_expiry=previous_expiry,
+        new_expiry=new_expiry,
+        renewal_count=renewal_count,
+        renewed_at=renewal.renewed_at,
+        message=f"Consent renewed successfully. New expiry: {new_expiry.strftime('%Y-%m-%d')}.",
+    )
+
+
+@router.post("/consents/withdraw")
+def withdraw_consent(
+    data: ConsentWithdraw,
+    request: Request,
+    db: Session = Depends(get_db),
+):
+    website = _get_website_by_key(data.widget_key, db)
+
+    consent = _get_active_consent(website.id, data.visitor_id, db)
+    if not consent:
+        raise HTTPException(status_code=404, detail="No active consent found.")
+
+    consent.is_withdrawn = True
+    consent.withdrawn_at = datetime.utcnow()
+
+    withdrawal = ConsentWithdrawal(
+        consent_log_id=consent.id,
+        website_id=website.id,
+        visitor_id=data.visitor_id,
+        reason=data.reason,
+        ip_address=request.client.host,
+    )
+    db.add(withdrawal)
+    db.commit()
+
+    log_action(
+        db=db,
+        action="CONSENT_WITHDRAWN",
+        module="consent",
+        description=f"Consent withdrawn by visitor: {data.visitor_id}",
+        performed_by_type="visitor",
+        performed_by_id=data.visitor_id,
+        website_id=str(website.id),
+        ip_address=request.client.host,
+        old_value={"status": consent.consent_status},
+        new_value={"is_withdrawn": True, "reason": data.reason},
+    )
+
+    return {"message": "Consent withdrawn successfully."}
+
+
+@router.get("/websites/{website_id}/consents/stats")
+def get_consent_stats(
+    website_id: str,
+    db: Session = Depends(get_db),
+    current_business: Business = Depends(get_current_business),
+):
+    website = db.query(Website).filter(
+        Website.id == uuid_lib.UUID(website_id),
+        Website.business_id == get_effective_business_id(current_business),
+    ).first()
+    if not website:
+        raise HTTPException(status_code=404, detail="Website not found.")
+
+    now = datetime.utcnow()
+    wid = uuid_lib.UUID(website_id)
+    total = db.query(ConsentLog).filter(ConsentLog.website_id == wid).count()
+    accepted = db.query(ConsentLog).filter(ConsentLog.website_id == wid, ConsentLog.consent_status == "accepted_all").count()
+    rejected = db.query(ConsentLog).filter(ConsentLog.website_id == wid, ConsentLog.consent_status == "rejected_all").count()
+    customized = db.query(ConsentLog).filter(ConsentLog.website_id == wid, ConsentLog.consent_status == "customized").count()
+    withdrawn = db.query(ConsentLog).filter(ConsentLog.website_id == wid, ConsentLog.is_withdrawn == True).count()
+    expired = db.query(ConsentLog).filter(ConsentLog.website_id == wid, ConsentLog.is_withdrawn == False, ConsentLog.expires_at <= now).count()
+    expiring_soon = db.query(ConsentLog).filter(
+        ConsentLog.website_id == wid,
+        ConsentLog.is_withdrawn == False,
+        ConsentLog.expires_at > now,
+        ConsentLog.expires_at <= now + timedelta(days=RENEWAL_REMINDER_DAYS),
+    ).count()
+
+    return {
+        "total": total,
+        "accepted_all": accepted,
+        "rejected_all": rejected,
+        "customized": customized,
+        "withdrawn": withdrawn,
+        "expired": expired,
+        "expiring_soon": expiring_soon,
+    }
+
+@router.get("/websites/{website_id}/consents/analytics")
+def get_consent_analytics(
+    website_id: str,
+    days: int = Query(default=30),
+    db: Session = Depends(get_db),
+    current_business: Business = Depends(get_current_business),
+):
+    website = db.query(Website).filter(
+        Website.id == uuid_lib.UUID(website_id),
+        Website.business_id == get_effective_business_id(current_business),
+    ).first()
+    if not website:
+        raise HTTPException(status_code=404, detail="Website not found.")
+
+    from sqlalchemy import func
+    wid = uuid_lib.UUID(website_id)
+    now = datetime.utcnow()
+    start = now - timedelta(days=days)
+
+    # Daily trend
+    trend = []
+    for i in range(days):
+        day_start = start + timedelta(days=i)
+        day_end = day_start + timedelta(days=1)
+        counts = {}
+        for status in ["accepted_all", "rejected_all", "customized"]:
+            counts[status] = db.query(ConsentLog).filter(
+                ConsentLog.website_id == wid,
+                ConsentLog.consented_at >= day_start,
+                ConsentLog.consented_at < day_end,
+                ConsentLog.consent_status == status,
+            ).count()
+        day_total = sum(counts.values())
+        if day_total > 0:
+            trend.append({
+                "date": day_start.strftime("%d %b"),
+                "total": day_total,
+                "accepted": counts["accepted_all"],
+                "rejected": counts["rejected_all"],
+                "customized": counts["customized"],
+            })
+
+    # Summary
+    total = db.query(ConsentLog).filter(ConsentLog.website_id == wid).count()
+    accepted = db.query(ConsentLog).filter(ConsentLog.website_id == wid, ConsentLog.consent_status == "accepted_all").count()
+    rejected = db.query(ConsentLog).filter(ConsentLog.website_id == wid, ConsentLog.consent_status == "rejected_all").count()
+    customized = db.query(ConsentLog).filter(ConsentLog.website_id == wid, ConsentLog.consent_status == "customized").count()
+    withdrawn = db.query(ConsentLog).filter(ConsentLog.website_id == wid, ConsentLog.is_withdrawn == True).count()
+
+    acceptance_rate = round((accepted / total * 100), 1) if total > 0 else 0
+    rejection_rate = round((rejected / total * 100), 1) if total > 0 else 0
+
+    # Method breakdown
+    methods = db.query(
+        ConsentLog.consent_method,
+        func.count(ConsentLog.id)
+    ).filter(ConsentLog.website_id == wid).group_by(ConsentLog.consent_method).all()
+
+    return {
+        "summary": {
+            "total": total,
+            "accepted": accepted,
+            "rejected": rejected,
+            "customized": customized,
+            "withdrawn": withdrawn,
+            "acceptance_rate": acceptance_rate,
+            "rejection_rate": rejection_rate,
+        },
+        "trend": trend,
+        "methods": [{"method": m or "unknown", "count": c} for m, c in methods],
+    }
+
+@router.get("/websites/{website_id}/consents/validations")
+def get_validation_logs(
+    website_id: str,
+    db: Session = Depends(get_db),
+    current_business: Business = Depends(get_current_business),
+):
+    website = db.query(Website).filter(
+        Website.id == uuid_lib.UUID(website_id),
+        Website.business_id == get_effective_business_id(current_business),
+    ).first()
+    if not website:
+        raise HTTPException(status_code=404, detail="Website not found.")
+
+    logs = (
+        db.query(ConsentValidationLog)
+        .filter(ConsentValidationLog.website_id == uuid_lib.UUID(website_id))
+        .order_by(ConsentValidationLog.validated_at.desc())
+        .limit(500)
+        .all()
+    )
+    return [
+        {
+            "id": str(l.id),
+            "visitor_id": l.visitor_id,
+            "purpose_id": l.purpose_id,
+            "is_valid": l.is_valid,
+            "failure_reason": l.failure_reason,
+            "requested_by": l.requested_by,
+            "validated_at": l.validated_at.isoformat(),
+        }
+        for l in logs
+    ]
+
+
+@router.get("/websites/{website_id}/consents/export")
+def export_consents(
+    website_id: str,
+    format: str = Query(default="csv", description="csv or pdf"),
+    db: Session = Depends(get_db),
+    current_business: Business = Depends(get_current_business),
+):
+    website = db.query(Website).filter(
+        Website.id == uuid_lib.UUID(website_id),
+        Website.business_id == get_effective_business_id(current_business),
+    ).first()
+    if not website:
+        raise HTTPException(status_code=404, detail="Website not found.")
+
+    consents = (
+        db.query(ConsentLog)
+        .filter(ConsentLog.website_id == uuid_lib.UUID(website_id))
+        .order_by(ConsentLog.consented_at.desc())
+        .all()
+    )
+
+    log_action(
+        db=db,
+        action="CONSENT_EXPORTED",
+        module="consent",
+        description=f"Consent logs exported ({format.upper()}) for: {website.domain}",
+        performed_by_type="business",
+        performed_by_id=current_business.id,
+        website_id=website_id,
+        new_value={"format": format, "record_count": len(consents)},
+    )
+
+    if format == "pdf":
+        return _export_pdf(consents, website)
+    else:
+        return _export_csv(consents, website)
+
+
+@router.get("/websites/{website_id}/consents/expiring", response_model=List[ExpiringConsentItem])
+def get_expiring_consents(
+    website_id: str,
+    within_days: int = Query(default=30, description="Consents expiring within this many days"),
+    db: Session = Depends(get_db),
+    current_business: Business = Depends(get_current_business),
+):
+    website = db.query(Website).filter(
+        Website.id == uuid_lib.UUID(website_id),
+        Website.business_id == get_effective_business_id(current_business),
+    ).first()
+    if not website:
+        raise HTTPException(status_code=404, detail="Website not found.")
+
+    cutoff = datetime.utcnow() + timedelta(days=within_days)
+    now = datetime.utcnow()
+
+    consents = (
+        db.query(ConsentLog)
+        .filter(
+            ConsentLog.website_id == uuid_lib.UUID(website_id),
+            ConsentLog.is_withdrawn == False,
+            ConsentLog.expires_at != None,
+            ConsentLog.expires_at > now,
+            ConsentLog.expires_at <= cutoff,
+        )
+        .order_by(ConsentLog.expires_at.asc())
+        .all()
+    )
+
+    return [
+        ExpiringConsentItem(
+            consent_log_id=c.id,
+            visitor_id=c.visitor_id,
+            expires_at=c.expires_at,
+            days_remaining=max(0, (c.expires_at - now).days),
+            consent_status=c.consent_status,
+        )
+        for c in consents
+    ]
+
+# ── Public portal endpoint — no auth required ─────────────────
+@router.get("/portal/consents")
+def get_portal_consents(
+    visitor_id: str = Query(..., description="Visitor email/ID"),
+    db: Session = Depends(get_db),
+):
+    consents = (
+        db.query(ConsentLog, Website)
+        .join(Website, ConsentLog.website_id == Website.id)
+        .filter(ConsentLog.visitor_id == visitor_id)
+        .order_by(ConsentLog.consented_at.desc())
+        .all()
+    )
+    return [
+        {
+            "id": str(c.id),
+            "website_id": str(c.website_id),
+            "domain": w.domain,
+            "widget_key": w.widget_key,
+            "visitor_id": c.visitor_id,
+            "consent_status": c.consent_status,
+            "accepted_categories": c.accepted_categories,
+            "rejected_categories": c.rejected_categories,
+            "ip_address": c.ip_address,
+            "consent_method": c.consent_method,
+            "consent_version": c.consent_version,
+            "consented_at": c.consented_at.isoformat() if c.consented_at else None,
+            "expires_at": c.expires_at.isoformat() if c.expires_at else None,
+            "is_withdrawn": c.is_withdrawn,
+            "withdrawn_at": c.withdrawn_at.isoformat() if c.withdrawn_at else None,
+        }
+        for c, w in consents
+    ]
+
+@router.get("/websites/{website_id}/consents", response_model=List[ConsentResponse])
+def get_consents(
+    website_id: str,
+    status: Optional[str] = Query(None, description="Filter: active | withdrawn | expired"),
+    visitor_id: Optional[str] = Query(None, description="Filter by visitor ID"),
+    limit: int = Query(100, le=500),
+    db: Session = Depends(get_db),
+    current_business: Business = Depends(get_current_business),
+):
+    website = db.query(Website).filter(
+        Website.id == uuid_lib.UUID(website_id),
+        Website.business_id == get_effective_business_id(current_business),
+    ).first()
+    if not website:
+        raise HTTPException(status_code=404, detail="Website not found.")
+
+    query = db.query(ConsentLog).filter(ConsentLog.website_id == uuid_lib.UUID(website_id))
+
+    if visitor_id:
+        query = query.filter(ConsentLog.visitor_id == visitor_id)
+
+    if status == "active":
+        query = query.filter(
+            ConsentLog.is_withdrawn == False,
+            ConsentLog.expires_at > datetime.utcnow(),
+        )
+    elif status == "withdrawn":
+        query = query.filter(ConsentLog.is_withdrawn == True)
+    elif status == "expired":
+        query = query.filter(
+            ConsentLog.is_withdrawn == False,
+            ConsentLog.expires_at <= datetime.utcnow(),
+        )
+
+    return query.order_by(ConsentLog.consented_at.desc()).limit(limit).all()
+
+
+def _export_csv(consents, website) -> StreamingResponse:
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow([
+        "ID", "Visitor ID", "Status", "Method", "Version",
+        "IP Address", "Withdrawn", "Expires At", "Date",
+    ])
+    for c in consents:
+        writer.writerow([
+            str(c.id), c.visitor_id, c.consent_status,
+            c.consent_method, c.consent_version, c.ip_address,
+            c.is_withdrawn,
+            c.expires_at.strftime("%Y-%m-%d") if c.expires_at else "",
+            c.consented_at.strftime("%Y-%m-%d %H:%M:%S"),
+        ])
+    output.seek(0)
+    return StreamingResponse(
+        iter([output.getvalue()]),
+        media_type="text/csv",
+        headers={"Content-Disposition": f"attachment; filename=consents_{website.domain}.csv"},
+    )
+
+
+def _export_pdf(consents, website) -> StreamingResponse:
+    try:
+        from reportlab.lib.pagesizes import A4
+        from reportlab.lib import colors
+        from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+        from reportlab.lib.styles import getSampleStyleSheet
+    except ImportError:
+        raise HTTPException(
+            status_code=500,
+            detail="PDF export requires reportlab. Run: pip install reportlab",
+        )
+
+    buffer = io.BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=A4)
+    styles = getSampleStyleSheet()
+    elements = []
+
+    elements.append(Paragraph(f"Consent History Report — {website.domain}", styles["Title"]))
+    elements.append(Paragraph(f"Generated: {datetime.utcnow().strftime('%Y-%m-%d %H:%M UTC')}", styles["Normal"]))
+    elements.append(Spacer(1, 20))
+
+    headers = ["Visitor ID", "Status", "Method", "Withdrawn", "Expires", "Date"]
+    rows = [headers]
+    for c in consents:
+        rows.append([
+            c.visitor_id[:20],
+            c.consent_status,
+            c.consent_method or "-",
+            "Yes" if c.is_withdrawn else "No",
+            c.expires_at.strftime("%Y-%m-%d") if c.expires_at else "-",
+            c.consented_at.strftime("%Y-%m-%d %H:%M"),
+        ])
+
+    table = Table(rows, repeatRows=1)
+    table.setStyle(TableStyle([
+        ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#1a1a2e")),
+        ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
+        ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+        ("FONTSIZE", (0, 0), (-1, -1), 8),
+        ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.white, colors.HexColor("#f5f5f5")]),
+        ("GRID", (0, 0), (-1, -1), 0.25, colors.HexColor("#cccccc")),
+        ("TOPPADDING", (0, 0), (-1, -1), 4),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
+    ]))
+    elements.append(table)
+
+    doc.build(elements)
+    buffer.seek(0)
+
+    return StreamingResponse(
+        iter([buffer.getvalue()]),
+        media_type="application/pdf",
+        headers={"Content-Disposition": f"attachment; filename=consents_{website.domain}.pdf"},
+    )

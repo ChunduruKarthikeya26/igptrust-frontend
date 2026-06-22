@@ -1,0 +1,65 @@
+﻿from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from database import engine, Base
+import models
+from routes import auth, website, cookie, consent, audit, digilocker, scanner, dpdp_compliance
+from routes.retention import router as retention_router
+from routes.grievances import router as grievances_router, website_router as grievances_website_router
+from scheduler import start_scheduler
+from routes.export import router as export_router
+from routes.notifications import router as notifications_router
+
+# Create all tables
+Base.metadata.create_all(bind=engine)
+
+app = FastAPI(
+    title="Cookie Consent Management API",
+    description="DPDPA 2023 compliant cookie consent management platform",
+    version="1.0.0",
+    redirect_slashes=False
+)
+
+# CORS — allow React frontend
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"]
+)
+
+# Register all routes
+app.include_router(auth.router)
+app.include_router(dpdp_compliance.router)
+app.include_router(website.router)
+app.include_router(cookie.router)
+app.include_router(consent.router)
+app.include_router(audit.router)
+app.include_router(digilocker.router)
+app.include_router(scanner.router)
+app.include_router(grievances_router)
+app.include_router(grievances_website_router)
+app.include_router(export_router)
+app.include_router(notifications_router)
+app.include_router(retention_router)
+
+@app.get("/")
+def root():
+    return {
+        "message": "Cookie Consent Management API ✅",
+        "docs": "/docs",
+        "version": "1.0.0"
+    }
+
+@app.get("/health")
+def health():
+    return {"status": "ok"}
+
+@app.on_event("startup")
+async def startup_event():
+    start_scheduler()

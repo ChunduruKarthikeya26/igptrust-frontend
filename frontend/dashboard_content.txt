@@ -1,0 +1,433 @@
+import { useState, useEffect } from 'react'
+import LanguageSwitcher from '../../components/LanguageSwitcher'
+import { useNavigate, Link } from 'react-router-dom'
+import {
+  Shield, LogOut, CheckCircle, XCircle, AlertCircle,
+  Globe, Calendar, Clock, ChevronRight, FileText,
+  RefreshCw, AlertTriangle, Settings, Save, X
+} from 'lucide-react'
+import api from '../../api/axios'
+import { updateConsent } from '../../api/portal'
+import toast from 'react-hot-toast'
+
+const STATUS_CONFIG = {
+  accepted: { label: 'Accepted', icon: CheckCircle, cls: 'bg-green-50 text-green-700 border-green-200' },
+  accepted_all: { label: 'Accepted All', icon: CheckCircle, cls: 'bg-green-50 text-green-700 border-green-200' },
+  rejected: { label: 'Rejected', icon: XCircle, cls: 'bg-red-50 text-red-700 border-red-200' },
+  rejected_all: { label: 'Rejected All', icon: XCircle, cls: 'bg-red-50 text-red-700 border-red-200' },
+  customized: { label: 'Customized', icon: AlertCircle, cls: 'bg-yellow-50 text-yellow-700 border-yellow-200' },
+  withdrawn: { label: 'Withdrawn', icon: XCircle, cls: 'bg-gray-100 text-gray-500 border-gray-200' },
+}
+
+const CATEGORY_LABELS = {
+  essential:   { label: 'Essential',   desc: 'Required for the website to function', locked: true },
+  analytics:   { label: 'Analytics',   desc: 'Help us understand how you use the site', locked: false },
+  marketing:   { label: 'Marketing',   desc: 'Used to show you relevant advertisements', locked: false },
+  preferences: { label: 'Preferences', desc: 'Remember your settings and preferences', locked: false },
+  functional:  { label: 'Functional',  desc: 'Enable enhanced functionality', locked: false },
+}
+
+function CategoryBadge({ name, accepted }) {
+  return (
+    <span className={`inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full font-medium border
+      ${accepted
+        ? 'bg-green-50 text-green-700 border-green-200'
+        : 'bg-red-50 text-red-600 border-red-200'}`}>
+      <span className={`w-1.5 h-1.5 rounded-full ${accepted ? 'bg-green-500' : 'bg-red-400'}`} />
+      {name}
+    </span>
+  )
+}
+
+// ── Modify Preferences Modal ──────────────────────────────────────────────
+function ModifyModal({ consent, visitorId, onClose, onSaved }) {
+  const allCats = {
+    ...Object.fromEntries(Object.keys(consent.accepted_categories || {}).map(k => [k, true])),
+    ...Object.fromEntries(Object.keys(consent.rejected_categories || {}).map(k => [k, false])),
+  }
+
+  const [prefs, setPrefs] = useState(allCats)
+  const [saving, setSaving] = useState(false)
+
+  const toggle = (cat) => {
+    const info = CATEGORY_LABELS[cat]
+    if (info?.locked) return
+    setPrefs(p => ({ ...p, [cat]: !p[cat] }))
+  }
+
+  const handleSave = async () => {
+    setSaving(true)
+    try {
+      const accepted = Object.fromEntries(Object.entries(prefs).filter(([, v]) => v))
+      const rejected = Object.fromEntries(Object.entries(prefs).filter(([, v]) => !v))
+      const allAccepted = Object.values(prefs).every(v => v)
+      const allRejected = Object.values(prefs).every(v => !v)
+      const newStatus = allAccepted ? 'accepted_all' : allRejected ? 'rejected_all' : 'customized'
+
+      await updateConsent(consent._widgetKey, visitorId, newStatus, accepted, rejected)
+      toast.success('Preferences updated successfully')
+      onSaved()
+      onClose()
+    } catch {
+      toast.error('Failed to update preferences')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
+      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden">
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+          <div>
+            <p className="text-sm font-bold text-gray-800">Modify Preferences</p>
+            <p className="text-xs text-gray-400 mt-0.5">{consent._domain}</p>
+          </div>
+          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400">
+            <X size={16} />
+          </button>
+        </div>
+
+        {/* Categories */}
+        <div className="px-6 py-4 flex flex-col gap-3">
+          {Object.keys(prefs).map(cat => {
+            const info = CATEGORY_LABELS[cat] || { label: cat, desc: '', locked: false }
+            const isOn = prefs[cat]
+            return (
+              <div
+                key={cat}
+                onClick={() => toggle(cat)}
+                className={`flex items-center justify-between p-3 rounded-xl border transition-all
+                  ${info.locked ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer hover:bg-gray-50'}
+                  ${isOn ? 'border-green-200 bg-green-50/40' : 'border-gray-100 bg-white'}`}
+              >
+                <div>
+                  <p className="text-sm font-medium text-gray-700">
+                    {info.label}
+                    {info.locked && <span className="ml-1.5 text-xs text-gray-400">(Required)</span>}
+                  </p>
+                  <p className="text-xs text-gray-400 mt-0.5">{info.desc}</p>
+                </div>
+                {/* Toggle */}
+                <div className={`relative w-10 h-5 rounded-full transition-colors flex-shrink-0
+                  ${isOn ? 'bg-green-500' : 'bg-gray-200'}`}>
+                  <span className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-all
+                    ${isOn ? 'left-5' : 'left-0.5'}`} />
+                </div>
+              </div>
+            )
+          })}
+        </div>
+
+        {/* Footer */}
+        <div className="flex items-center justify-end gap-2 px-6 py-4 border-t border-gray-100 bg-gray-50">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 text-sm text-gray-500 hover:text-gray-700 rounded-lg hover:bg-gray-100"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleSave}
+            disabled={saving}
+            className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium bg-blue-600
+                       text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+          >
+            {saving ? <RefreshCw size={13} className="animate-spin" /> : <Save size={13} />}
+            Save Preferences
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ── Main Page ─────────────────────────────────────────────────────────────
+export default function PortalDashboard() {
+  const [visitorId, setVisitorId] = useState('')
+  const [consents, setConsents] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [withdrawing, setWithdrawing] = useState(null)
+  const [modifyingConsent, setModifyingConsent] = useState(null)
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    const stored = sessionStorage.getItem('portal_visitor_id')
+    if (!stored) { navigate('/portal'); return }
+    setVisitorId(stored)
+    fetchAllConsents(stored)
+  }, [])
+
+  const fetchAllConsents = async (vid) => {
+    setLoading(true)
+    try {
+      const res = await api.get('/portal/consents', { params: { visitor_id: vid } })
+      const data = res.data || []
+      data.forEach(c => {
+        c._domain = c.domain
+        c._widgetKey = c.widget_key
+      })
+      setConsents(data)
+    } catch {
+      toast.error('Failed to load your consent records')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleWithdraw = async (consent) => {
+    if (!consent._widgetKey) { toast.error('Cannot withdraw — widget key not found'); return }
+    setWithdrawing(consent.id)
+    try {
+      await api.post('/consents/withdraw', {
+        widget_key: consent._widgetKey,
+        visitor_id: visitorId,
+        reason: 'Withdrawn by data principal via consent portal'
+      })
+      toast.success('Consent withdrawn successfully')
+      fetchAllConsents(visitorId)
+    } catch {
+      toast.error('Failed to withdraw consent')
+    } finally {
+      setWithdrawing(null)
+    }
+  }
+
+  const handleLogout = () => {
+    sessionStorage.removeItem('portal_visitor_id')
+    navigate('/portal')
+  }
+
+  const activeConsents = consents.filter(c => !c.is_withdrawn)
+  const withdrawnConsents = consents.filter(c => c.is_withdrawn)
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+          <p className="text-sm text-gray-500">Loading your consent records...</p>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+      {/* Modify Modal */}
+      {modifyingConsent && (
+        <ModifyModal
+          consent={modifyingConsent}
+          visitorId={visitorId}
+          onClose={() => setModifyingConsent(null)}
+          onSaved={() => fetchAllConsents(visitorId)}
+        />
+      )}
+
+      {/* Header */}
+      <header className="bg-white border-b border-gray-100 sticky top-0 z-10 shadow-sm">
+        <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+              <Shield size={16} className="text-white" />
+            </div>
+            <div>
+              <p className="text-sm font-bold text-gray-800">My Consent Dashboard</p>
+              <p className="text-xs text-gray-400 font-mono">{visitorId}</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            <Link
+              to="/portal/grievance"
+              className="flex items-center gap-1.5 text-xs font-medium text-orange-600
+                         bg-orange-50 border border-orange-200 px-3 py-1.5 rounded-lg hover:bg-orange-100 transition-colors"
+            >
+              <AlertTriangle size={13} />
+              Raise Grievance
+            </Link>
+            <LanguageSwitcher className="mr-2" />
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-1.5 text-xs font-medium text-gray-500
+                         hover:text-gray-700 px-3 py-1.5 rounded-lg hover:bg-gray-100 transition-colors"
+            >
+              <LogOut size={13} />
+              Sign Out
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <main className="max-w-4xl mx-auto px-4 py-8">
+        {/* Summary cards */}
+        <div className="grid grid-cols-3 gap-4 mb-8">
+          {[
+            { label: 'Total Consents', value: consents.length, cls: 'bg-blue-600', icon: FileText },
+            { label: 'Active', value: activeConsents.length, cls: 'bg-green-600', icon: CheckCircle },
+            { label: 'Withdrawn', value: withdrawnConsents.length, cls: 'bg-gray-500', icon: XCircle },
+          ].map(({ label, value, cls, icon: Icon }) => (
+            <div key={label} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+              <div className={`w-9 h-9 ${cls} rounded-xl flex items-center justify-center mb-3`}>
+                <Icon size={16} className="text-white" />
+              </div>
+              <p className="text-2xl font-bold text-gray-800">{value}</p>
+              <p className="text-xs text-gray-400 mt-0.5">{label}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* No consents state */}
+        {consents.length === 0 && (
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-12 text-center">
+            <div className="w-14 h-14 bg-gray-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <FileText size={24} className="text-gray-300" />
+            </div>
+            <p className="text-gray-700 font-semibold mb-1">No consent records found</p>
+            <p className="text-sm text-gray-400">
+              We couldn't find any consent records linked to <span className="font-mono">{visitorId}</span>
+            </p>
+            <Link
+              to="/portal/grievance"
+              className="inline-flex items-center gap-2 mt-4 text-sm text-blue-600 hover:underline"
+            >
+              Raise a grievance instead <ChevronRight size={14} />
+            </Link>
+          </div>
+        )}
+
+        {/* Active Consents */}
+        {activeConsents.length > 0 && (
+          <section className="mb-8">
+            <h2 className="text-sm font-bold text-gray-700 uppercase tracking-wider mb-4 flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-green-500 inline-block" />
+              Active Consents ({activeConsents.length})
+            </h2>
+            <div className="flex flex-col gap-4">
+              {activeConsents.map(consent => {
+                const cfg = STATUS_CONFIG[consent.consent_status] || STATUS_CONFIG.customized
+                const Icon = cfg.icon
+                const accepted = consent.accepted_categories || {}
+                const rejected = consent.rejected_categories || {}
+                const allCats = [...new Set([...Object.keys(accepted), ...Object.keys(rejected)])]
+                const hasCategories = allCats.length > 0
+
+                return (
+                  <div key={consent.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                    {/* Card header */}
+                    <div className="flex items-center justify-between px-5 py-4 border-b border-gray-50">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center">
+                          <Globe size={15} className="text-blue-500" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-semibold text-gray-800">{consent._domain}</p>
+                          <p className="text-xs text-gray-400 flex items-center gap-1 mt-0.5">
+                            <Calendar size={11} />
+                            Consented {new Date(consent.consented_at).toLocaleDateString('en-IN', {
+                              day: '2-digit', month: 'short', year: 'numeric'
+                            })}
+                          </p>
+                        </div>
+                      </div>
+                      <span className={`inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-lg border ${cfg.cls}`}>
+                        <Icon size={12} />
+                        {cfg.label}
+                      </span>
+                    </div>
+
+                    {/* Categories */}
+                    {hasCategories && (
+                      <div className="px-5 py-3 border-b border-gray-50">
+                        <p className="text-xs text-gray-400 mb-2 font-medium">Consent Categories</p>
+                        <div className="flex flex-wrap gap-1.5">
+                          {allCats.map(cat => (
+                            <CategoryBadge key={cat} name={cat} accepted={accepted[cat] === true} />
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Footer actions */}
+                    <div className="flex items-center justify-between px-5 py-3">
+                      <div className="flex items-center gap-1 text-xs text-gray-400">
+                        <Clock size={11} />
+                        Expires {consent.expires_at
+                          ? new Date(consent.expires_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })
+                          : 'Never'}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {/* Modify button — only show if there are categories to modify */}
+                        {hasCategories && (
+                          <button
+                            onClick={() => setModifyingConsent(consent)}
+                            className="flex items-center gap-1.5 text-xs font-medium text-blue-600
+                                       hover:text-blue-700 hover:bg-blue-50 px-3 py-1.5 rounded-lg
+                                       border border-blue-200 hover:border-blue-300 transition-all"
+                          >
+                            <Settings size={12} />
+                            Modify Preferences
+                          </button>
+                        )}
+                        <button
+                          onClick={() => handleWithdraw(consent)}
+                          disabled={withdrawing === consent.id}
+                          className="flex items-center gap-1.5 text-xs font-medium text-red-500
+                                     hover:text-red-700 hover:bg-red-50 px-3 py-1.5 rounded-lg
+                                     border border-red-200 hover:border-red-300 transition-all
+                                     disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          {withdrawing === consent.id
+                            ? <RefreshCw size={12} className="animate-spin" />
+                            : <XCircle size={12} />}
+                          Withdraw
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </section>
+        )}
+
+        {/* Withdrawn Consents */}
+        {withdrawnConsents.length > 0 && (
+          <section>
+            <h2 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-gray-300 inline-block" />
+              Withdrawn ({withdrawnConsents.length})
+            </h2>
+            <div className="flex flex-col gap-3">
+              {withdrawnConsents.map(consent => (
+                <div key={consent.id} className="bg-white rounded-xl border border-gray-100 shadow-sm px-5 py-4 opacity-60">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Globe size={14} className="text-gray-400" />
+                      <span className="text-sm text-gray-500">{consent._domain}</span>
+                    </div>
+                    <span className="text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">
+                      Withdrawn {consent.withdrawn_at
+                        ? new Date(consent.withdrawn_at).toLocaleDateString('en-IN')
+                        : ''}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* DPDP rights note */}
+        <div className="mt-8 bg-blue-50 border border-blue-100 rounded-2xl p-5">
+          <p className="text-xs font-semibold text-blue-700 mb-1">Your Rights under DPDP Act, 2023</p>
+          <p className="text-xs text-blue-600 leading-relaxed">
+            You have the right to access, correct, and erase your personal data. You may withdraw consent at any time.
+            Withdrawal takes immediate effect. To raise a formal grievance,{' '}
+            <Link to="/portal/grievance" className="underline font-medium">click here</Link>.
+          </p>
+        </div>
+      </main>
+    </div>
+  )
+}

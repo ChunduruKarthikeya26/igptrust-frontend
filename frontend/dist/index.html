@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ConsentManager</title>
+    <script>
+      window.addEventListener('error', (event) => {
+        const root = document.getElementById('root');
+        if (root) {
+          root.innerHTML = `<div style="padding: 20px; color: red; font-family: monospace; z-index: 9999; position: relative; background: white;"><h1>Runtime Error</h1><pre>${event.error?.stack || event.message}</pre></div>`;
+        }
+      });
+      window.addEventListener('unhandledrejection', (event) => {
+        const root = document.getElementById('root');
+        if (root) {
+          root.innerHTML = `<div style="padding: 20px; color: red; font-family: monospace; z-index: 9999; position: relative; background: white;"><h1>Unhandled Promise Rejection</h1><pre>${event.reason?.stack || event.reason}</pre></div>`;
+        }
+      });
+    </script>
+    <script type="module" crossorigin src="/assets/index-DA69qu0R.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-2f0qYfd8.css">
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>
