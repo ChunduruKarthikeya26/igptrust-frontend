@@ -5,7 +5,6 @@ import { register } from '../api/auth';
 import toast from 'react-hot-toast';
 import Header from '../components/header';
 import RegisterForm from '../components/RegisterForm';
-import { RegisterCodeForm } from '../components/RegisterCodeSection';
 
 export default function Register() {
   const navigate = useNavigate();
@@ -61,27 +60,21 @@ export default function Register() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
-          className="max-w-7xl w-full mx-auto flex flex-col lg:flex-row gap-10 items-center justify-center"
+          className="w-full max-w-xl mx-auto flex flex-col items-center justify-center"
         >
-          <div className="w-full lg:flex-1 min-w-0 flex justify-center">
-            <div className="w-full flex flex-col gap-4 items-center">
-              <RegisterForm 
-                formData={form} 
-                onChange={handleFormChange} 
-                onSubmit={handleSubmit}
-                loading={loading}
-              />
-              <p className="text-sm text-slate-500 mt-2">
-                Already have an account?{' '}
-                <Link to="/login" className="text-blue-600 font-medium hover:underline">
-                  Sign in
-                </Link>
-              </p>
-            </div>
-          </div>
-
-          <div className="w-full lg:flex-1 min-w-0 flex justify-center">
-            <RegisterCodeForm formData={form} />
+          <div className="w-full flex flex-col gap-4 items-center">
+            <RegisterForm 
+              formData={form} 
+              onChange={handleFormChange} 
+              onSubmit={handleSubmit}
+              loading={loading}
+            />
+            <p className="text-sm text-slate-500 mt-2">
+              Already have an account?{' '}
+              <Link to="/login" className="text-blue-600 font-medium hover:underline">
+                Sign in
+              </Link>
+            </p>
           </div>
         </motion.div>
       </main>

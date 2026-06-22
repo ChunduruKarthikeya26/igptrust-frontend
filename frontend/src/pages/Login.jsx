@@ -8,7 +8,6 @@ import { KeyRound } from 'lucide-react';
 import api from '../api/axios';
 import Header from '../components/header';
 import LoginForm from '../components/FormSection';
-import { CodeForm } from '../components/CodeSection';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -105,75 +104,69 @@ export default function Login() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
-          className="max-w-7xl w-full mx-auto flex flex-col lg:flex-row gap-10 items-center justify-center"
+          className="w-full max-w-xl mx-auto flex flex-col items-center justify-center"
         >
-          <div className="w-full lg:flex-1 min-w-0 flex justify-center">
-            {!mfaRequired ? (
-              <div className="w-full flex flex-col gap-4 items-center">
-                <LoginForm 
-                  formData={formData} 
-                  onChange={handleFormChange} 
-                  onSubmit={handleSubmit}
-                  loading={loading}
-                />
-                <p className="text-sm text-slate-500 mt-2">
-                  Don't have an account?{' '}
-                  <Link to="/register" className="text-blue-600 font-medium hover:underline">
-                    Sign Up
-                  </Link>
+          {!mfaRequired ? (
+            <div className="w-full flex flex-col gap-4 items-center">
+              <LoginForm 
+                formData={formData} 
+                onChange={handleFormChange} 
+                onSubmit={handleSubmit}
+                loading={loading}
+              />
+              <p className="text-sm text-slate-500 mt-2">
+                Don't have an account?{' '}
+                <Link to="/register" className="text-blue-600 font-medium hover:underline">
+                  Sign Up
+                </Link>
+              </p>
+            </div>
+          ) : (
+            <div className="bg-white p-10 rounded-2xl shadow-xl border border-gray-100 w-full max-w-xl h-fit">
+              <div className="text-center mb-6">
+                <div className="w-12 h-12 bg-orange-50 rounded-2xl flex items-center justify-center mx-auto mb-3">
+                  <KeyRound size={22} className="text-orange-500" />
+                </div>
+                <h2 className="text-lg font-bold text-gray-800">Two-Factor Authentication</h2>
+                <p className="text-sm text-gray-500 mt-1">
+                  Enter the 6-digit code from your authenticator app
                 </p>
+                <p className="text-xs text-gray-400 mt-1 font-mono">{pendingEmail}</p>
               </div>
-            ) : (
-              <div className="bg-white p-10 rounded-2xl shadow-xl border border-gray-100 w-full max-w-xl h-fit">
-                <div className="text-center mb-6">
-                  <div className="w-12 h-12 bg-orange-50 rounded-2xl flex items-center justify-center mx-auto mb-3">
-                    <KeyRound size={22} className="text-orange-500" />
-                  </div>
-                  <h2 className="text-lg font-bold text-gray-800">Two-Factor Authentication</h2>
-                  <p className="text-sm text-gray-500 mt-1">
-                    Enter the 6-digit code from your authenticator app
-                  </p>
-                  <p className="text-xs text-gray-400 mt-1 font-mono">{pendingEmail}</p>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-1 text-center">
+                    Authenticator Code
+                  </label>
+                  <input
+                    type="text"
+                    maxLength={6}
+                    placeholder="000000"
+                    autoFocus
+                    className="w-full text-center text-2xl font-mono tracking-widest border border-gray-200
+                               rounded-lg px-3 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    value={otpCode}
+                    onChange={e => setOtpCode(e.target.value.replace(/\D/g, ''))}
+                    onKeyDown={e => e.key === 'Enter' && handleMfaSubmit()}
+                  />
                 </div>
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-xs font-medium text-gray-600 mb-1 text-center">
-                      Authenticator Code
-                    </label>
-                    <input
-                      type="text"
-                      maxLength={6}
-                      placeholder="000000"
-                      autoFocus
-                      className="w-full text-center text-2xl font-mono tracking-widest border border-gray-200
-                                 rounded-lg px-3 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500"
-                      value={otpCode}
-                      onChange={e => setOtpCode(e.target.value.replace(/\D/g, ''))}
-                      onKeyDown={e => e.key === 'Enter' && handleMfaSubmit()}
-                    />
-                  </div>
-                  <button
-                    onClick={handleMfaSubmit}
-                    disabled={mfaLoading || otpCode.length !== 6}
-                    className="w-full bg-orange-500 text-white py-2.5 rounded-lg text-sm font-medium
-                               hover:bg-orange-600 transition-colors disabled:opacity-50 cursor-pointer"
-                  >
-                    {mfaLoading ? 'Verifying...' : 'Verify Code'}
-                  </button>
-                  <button
-                    onClick={() => { setMfaRequired(false); setOtpCode(''); setPendingEmail('') }}
-                    className="w-full text-sm text-gray-400 hover:text-gray-600 py-1 cursor-pointer text-center"
-                  >
-                    ← Back to login
-                  </button>
-                </div>
+                <button
+                  onClick={handleMfaSubmit}
+                  disabled={mfaLoading || otpCode.length !== 6}
+                  className="w-full bg-orange-500 text-white py-2.5 rounded-lg text-sm font-medium
+                             hover:bg-orange-600 transition-colors disabled:opacity-50 cursor-pointer"
+                >
+                  {mfaLoading ? 'Verifying...' : 'Verify Code'}
+                </button>
+                <button
+                  onClick={() => { setMfaRequired(false); setOtpCode(''); setPendingEmail('') }}
+                  className="w-full text-sm text-gray-400 hover:text-gray-600 py-1 cursor-pointer text-center"
+                >
+                  ← Back to login
+                </button>
               </div>
-            )}
-          </div>
-
-          <div className="w-full lg:flex-1 min-w-0 flex justify-center">
-            <CodeForm formData={formData} />
-          </div>
+            </div>
+          )}
         </motion.div>
       </main>
     </div>
