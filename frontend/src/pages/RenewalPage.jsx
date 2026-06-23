@@ -17,11 +17,16 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 // ── helpers ───────────────────────────────────────────────────────────────────
 
 function daysLeft(expiresAt) {
-  return Math.ceil((new Date(expiresAt) - new Date()) / (1000 * 60 * 60 * 24))
+  if (!expiresAt) return NaN
+  const target = new Date(expiresAt)
+  if (isNaN(target.getTime())) return NaN
+  return Math.ceil((target - new Date()) / (1000 * 60 * 60 * 24))
 }
 
 function DaysLeftBadge({ expiresAt }) {
   const days = daysLeft(expiresAt)
+  if (isNaN(days)) return <Badge variant="outline" className="px-2 py-0.5 rounded-full text-xs font-semibold bg-slate-50 text-slate-500 border-none">—</Badge>
+  if (days <= 0) return <Badge variant="outline" className="px-2 py-0.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-500 border-none">Expired</Badge>
   if (days <= 7)  return <Badge variant="outline" className="px-2 py-0.5 rounded-full text-xs font-semibold bg-red-50 text-red-700 border-none">{days}d left</Badge>
   if (days <= 14) return <Badge variant="outline" className="px-2 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border-none">{days}d left</Badge>
   return <Badge variant="outline" className="px-2 py-0.5 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border-none">{days}d left</Badge>
@@ -375,7 +380,9 @@ export default function RenewalPage() {
 
                       {/* Expires */}
                       <TableCell className="px-5 py-3.5 text-xs text-slate-600">
-                        {new Date(c.expires_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', timeZone: 'Asia/Kolkata' })}
+                        {!c.expires_at || isNaN(new Date(c.expires_at).getTime()) 
+                          ? <span className="text-slate-400">—</span> 
+                          : new Date(c.expires_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', timeZone: 'Asia/Kolkata' })}
                       </TableCell>
 
                       {/* Time Left */}

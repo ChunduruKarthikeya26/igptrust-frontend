@@ -5,8 +5,8 @@ import {
   LayoutDashboard, Globe, FileText,
   Shield, ScrollText, ShieldCheck,
   ScanSearch, RefreshCw, AlertTriangle, Bell, Database, BarChart2, Users, Layers, Scale, CheckCircle, Upload,
-  PanelRightOpen,
-  PanelRightClose,
+  PanelLeftOpen,
+  PanelLeftClose,
 
 } from 'lucide-react'
 
@@ -69,6 +69,7 @@ export default function Sidebar({ mobileOpen, setMobileOpen }) {
       <div className="relative group" style={{isolation: 'isolate'}}>
         <Link
           to={to}
+          onClick={() => setMobileOpen?.(false)}
           className={`flex items-center gap-3 rounded-lg text-sm transition-all duration-150
             ${collapsed ? 'justify-center px-2 py-2.5' : 'px-3 py-2'}
             ${active
@@ -147,7 +148,7 @@ export default function Sidebar({ mobileOpen, setMobileOpen }) {
           className="w-8 h-8 flex items-center justify-center
                     rounded-lg hover:bg-[#eeeeff] transition-colors duration-150 mx-auto"
         >
-          <PanelRightOpen size={20} className="text-[#533afd]" />
+          <PanelLeftOpen size={20} className="text-[#533afd]" />
         </button>
         ) : (
           // Expanded: logo left, hamburger right
@@ -167,7 +168,7 @@ export default function Sidebar({ mobileOpen, setMobileOpen }) {
           className="w-8 h-8 flex items-center justify-center
                     rounded-lg hover:bg-[#eeeeff] transition-colors duration-150 shrink-0"
         >
-          <PanelRightClose size={20} className="text-[#533afd]" />
+          <PanelLeftClose size={20} className="text-[#533afd]" />
         </button>
           </>
         )}

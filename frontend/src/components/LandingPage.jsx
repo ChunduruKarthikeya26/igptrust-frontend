@@ -1404,9 +1404,31 @@ const STYLES = `
   }
   .icmp-root .header-container {
     height: 70px;
+    justify-content: space-between;
   }
   .icmp-root .nav {
     display: none;
+    flex-direction: column;
+    position: absolute;
+    top: 70px;
+    left: 0;
+    right: 0;
+    background: var(--bg-color);
+    padding: 24px;
+    border-bottom: 1px solid var(--border-color);
+    box-shadow: var(--shadow-md);
+    gap: 16px;
+    align-items: flex-start;
+  }
+  .icmp-root .nav.open {
+    display: flex;
+  }
+  .icmp-root .mobile-menu-btn {
+    display: block;
+    background: none;
+    border: none;
+    color: var(--text-primary);
+    cursor: pointer;
   }
   .icmp-root .features-grid {
     grid-template-columns: 1fr;
@@ -1594,6 +1616,8 @@ const ACTIONS = ["Consent Approved", "Consent Custom", "Consent Rejected"];
 let logIdCounter = 1;
 
 export default function ICMPLandingPage() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
   /* ---------------- Header scroll effect ---------------- */
   const [scrolled, setScrolled] = useState(false);
   useEffect(() => {
@@ -1862,7 +1886,7 @@ export default function ICMPLandingPage() {
 
       {/* HEADER */}
       <header className={`header${scrolled ? " scrolled" : ""}`} id="header">
-        <div className="container header-container">
+        <div className="container header-container flex justify-between items-center">
           <a href="#" className="logo-link">
             <svg width="28" height="28" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
               <rect width="32" height="32" rx="8" fill="#111111" />
@@ -1873,14 +1897,30 @@ export default function ICMPLandingPage() {
               i<span className="logo-accent">CMP</span>
             </span>
           </a>
-          <nav className="nav">
-            <a href="#features" className="nav-link">Features</a>
-            <a href="#architecture" className="nav-link">Architecture</a>
-            <a href="#pricing" className="nav-link">Pricing</a>
-            <a href="#faq" className="nav-link">FAQ</a>
-            <Button className="btn btn-outline btn-demo-trigger rounded-full" onClick={openModal}>Book a Demo</Button>
-            <Button asChild className="btn btn-accent btn-demo-trigger text-center flex items-center justify-center rounded-full" style={{ textDecoration: 'none' }}>
-              <Link to="/login">Login</Link>
+          <button className="mobile-menu-btn md:hidden" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              {mobileMenuOpen ? (
+                <>
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </>
+              ) : (
+                <>
+                  <line x1="3" y1="12" x2="21" y2="12" />
+                  <line x1="3" y1="6" x2="21" y2="6" />
+                  <line x1="3" y1="18" x2="21" y2="18" />
+                </>
+              )}
+            </svg>
+          </button>
+          <nav className={`nav${mobileMenuOpen ? " open" : ""}`}>
+            <a href="#features" className="nav-link" onClick={() => setMobileMenuOpen(false)}>Features</a>
+            <a href="#architecture" className="nav-link" onClick={() => setMobileMenuOpen(false)}>Architecture</a>
+            <a href="#pricing" className="nav-link" onClick={() => setMobileMenuOpen(false)}>Pricing</a>
+            <a href="#faq" className="nav-link" onClick={() => setMobileMenuOpen(false)}>FAQ</a>
+            <Button className="btn btn-outline btn-demo-trigger rounded-full w-full md:w-auto" onClick={() => { openModal(); setMobileMenuOpen(false); }}>Book a Demo</Button>
+            <Button asChild className="btn btn-accent btn-demo-trigger text-center flex items-center justify-center rounded-full w-full md:w-auto" style={{ textDecoration: 'none' }}>
+              <Link to="/login" onClick={() => setMobileMenuOpen(false)}>Login</Link>
             </Button>
           </nav>
         </div>
