@@ -399,7 +399,7 @@ export default function RenewalPage() {
                           <Button
                             onClick={() => setModalConsent(c)}
                             size="sm"
-                            className="px-3 py-1.5 text-xs font-semibold bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition-colors h-7"
+                            className="px-3 py-1.5 text-xs font-semibold bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors h-7"
                           >
                             Send Reconsent
                           </Button>

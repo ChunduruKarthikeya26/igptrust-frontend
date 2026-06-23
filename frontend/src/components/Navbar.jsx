@@ -1,6 +1,6 @@
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { Bell, User, Settings, LogOut, Shield, ChevronDown, CreditCard, Key } from 'lucide-react'
+import { Bell, User, Settings, LogOut, Shield, ChevronDown, CreditCard, Key, Menu } from 'lucide-react'
 import { useState, useEffect, useRef, useCallback } from 'react'
 import axios from '../api/axios'
 
@@ -30,7 +30,7 @@ function timeAgo(iso) {
   return `${Math.floor(diff / 86400)}d ago`
 }
 
-export default function Navbar() {
+export default function Navbar({ onMenuClick }) {
   const { pathname } = useLocation()
   const navigate = useNavigate()
   const { business, logout } = useAuth()
@@ -202,12 +202,20 @@ export default function Navbar() {
       `}</style>
 
       <div
-        className="h-14 bg-white border-b border-[#e5edf5] flex items-center justify-between px-6 shrink-0"
+        className="h-14 bg-white border-b border-[#e5edf5] flex items-center justify-between px-4 md:px-6 shrink-0"
         style={{ boxShadow: '0px 1px 0px #e5edf5' }}
       >
-        <h1 className="text-sm font-medium" style={{ color: '#061b31', letterSpacing: '-0.1px' }}>
-          {title}
-        </h1>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={onMenuClick}
+            className="md:hidden p-1 -ml-1 text-slate-500 hover:text-slate-900 transition-colors"
+          >
+            <Menu size={20} />
+          </button>
+          <h1 className="text-sm font-medium" style={{ color: '#061b31', letterSpacing: '-0.1px' }}>
+            {title}
+          </h1>
+        </div>
 
         <div className="flex items-center gap-2">
 

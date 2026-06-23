@@ -53,6 +53,7 @@ export default function ProtectedRoute() {
   const { business, loading } = useAuth()
   const location = useLocation()
   const [bannerDismissed, setBannerDismissed] = useState(false)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   useEffect(() => {
     document.body.style.overflow = 'hidden'
@@ -66,6 +67,11 @@ export default function ProtectedRoute() {
       document.documentElement.style.height = ''
     }
   }, [])
+
+  // Close mobile menu on route change
+  useEffect(() => {
+    setMobileMenuOpen(false)
+  }, [location.pathname])
 
   if (loading) {
     return (
@@ -94,13 +100,13 @@ export default function ProtectedRoute() {
 
   return (
     <div className="flex h-screen bg-gray-50 overflow-hidden" style={{ height: '100vh', maxHeight: '100vh', overflow: 'hidden' }}>
-      <Sidebar />
-      <div className="flex-1 flex flex-col overflow-hidden" style={{ height: '100%', maxHeight: '100%', overflow: 'hidden' }}>
-        <Navbar />
+      <Sidebar mobileOpen={mobileMenuOpen} setMobileOpen={setMobileMenuOpen} />
+      <div className="flex-1 flex flex-col overflow-hidden" style={{ height: '100%', maxHeight: '100%', overflow: 'hidden', minWidth: 0 }}>
+        <Navbar onMenuClick={() => setMobileMenuOpen(true)} />
         {showMFABanner && (
           <MFABanner onDismiss={() => setBannerDismissed(true)} />
         )}
-        <main className="flex-1 overflow-auto p-6" style={{ flex: 1, overflowY: 'auto' }}>
+        <main className="flex-1 overflow-auto p-4 md:p-6" style={{ flex: 1, overflowY: 'auto' }}>
           <Outlet />
           <BottomNav />
         </main>

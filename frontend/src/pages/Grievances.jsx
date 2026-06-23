@@ -1041,7 +1041,7 @@ export default function Grievances() {
 
 
   return (
-    <div className="min-h-screen bg-slate-50/30">
+    <div className="bg-slate-50/30 animate-in fade-in duration-500">
       <div className="px-4 py-6 max-w-7xl mx-auto space-y-6">
 
         {/* Header */}

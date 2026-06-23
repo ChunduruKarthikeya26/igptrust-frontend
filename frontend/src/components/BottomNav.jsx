@@ -10,10 +10,14 @@ const mainLinks = [
 ]
 
 const complianceLinks = [
-  { to: '/consents',      label: 'Consent Logs',  roles: ['admin', 'dpo', 'operator'] },
-  { to: '/grievances',    label: 'Grievances',    roles: ['admin', 'dpo'] },
-  { to: '/renewal',       label: 'Renewal',       roles: ['admin', 'dpo', 'operator'] },
-  { to: '/notifications', label: 'Notifications', roles: ['admin', 'dpo'] },
+  { to: '/consents',          label: 'Consent Logs',    roles: ['admin', 'dpo', 'operator'] },
+  { to: '/dialog-versions',   label: 'Dialog Versions', roles: ['admin', 'dpo'] },
+  { to: '/grievances',        label: 'Grievances',      roles: ['admin', 'dpo'] },
+  { to: '/rights',            label: 'Data Rights',     roles: ['admin', 'dpo'] },
+  { to: '/renewal',           label: 'Renewal',         roles: ['admin', 'dpo', 'operator'] },
+  { to: '/notifications',     label: 'Notifications',   roles: ['admin', 'dpo'] },
+  { to: '/approvals',         label: 'Approvals',       roles: ['admin', 'dpo'] },
+  { to: '/consent-validation', label: 'Validation Logs', roles: ['admin', 'dpo'] },
 ]
 
 const reportsLinks = [

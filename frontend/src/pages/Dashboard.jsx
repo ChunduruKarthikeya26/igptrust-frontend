@@ -77,12 +77,12 @@ export default function Page() {
             <div className="flex flex-col gap-6 py-4 md:py-6">
               
               {/* Welcome banner */}
-              <div className="px-4 lg:px-6">
-                <h1 className="text-2xl font-bold tracking-tight text-slate-900">
-                  Welcome back{business?.name ? `, ${business.name}` : ","} 
+              <div className="px-4 lg:px-6 animate-in fade-in slide-in-from-bottom-4 duration-700 ease-out">
+                <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-black">
+                  Welcome back{business?.name ? `, ${business.name}` : ""}
                 </h1>
-                <p className="text-xs text-muted-foreground mt-0.5">
-                  Here's your consent management overview
+                <p className="text-sm sm:text-base font-medium text-slate-500 mt-1 max-w-2xl leading-relaxed">
+                  Here's your consent management overview.
                 </p>
               </div>
 
@@ -176,7 +176,7 @@ export default function Page() {
                       <div className="overflow-x-auto">
                         <table className="w-full text-sm">
                           <thead>
-                            <tr className="border-b border-border/50 bg-muted/5 text-muted-foreground text-xs font-semibold uppercase tracking-wider">
+                            <tr className="border-b border-border/50 bg-muted/5 text-muted-foreground text-xs font-semibold uppercase tracking-wider whitespace-nowrap">
                               <th className="px-6 py-3.5 text-left font-medium text-muted-foreground text-xs tracking-wider">Domain</th>
                               <th className="px-6 py-3.5 text-left font-medium text-muted-foreground text-xs tracking-wider">Widget Key</th>
                               <th className="px-6 py-3.5 text-left font-medium text-muted-foreground text-xs tracking-wider">Total Consents</th>
@@ -185,7 +185,7 @@ export default function Page() {
                               <th className="px-6 py-3.5"></th>
                             </tr>
                           </thead>
-                          <tbody className="divide-y divide-border/40">
+                          <tbody className="divide-y divide-border/40 whitespace-nowrap">
                             {paginated.map((site) => (
                               <tr key={site.id} className="hover:bg-muted/10 transition-colors border-b border-border/40 last:border-0">
                                 <td className="px-6 py-4 font-medium text-foreground">{site.domain}</td>

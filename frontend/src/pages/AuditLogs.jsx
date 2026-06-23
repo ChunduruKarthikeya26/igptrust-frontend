@@ -192,86 +192,51 @@ export default function AuditLogs() {
 
         </div>
 
-        <div className="flex items-center gap-2">
-
+        <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
           <Button onClick={() => handleExport('csv')} variant="outline" size="sm"
-
-            className="flex items-center gap-1.5 font-semibold border-slate-200 text-slate-600 bg-white hover:bg-slate-50 transition-all rounded-xl h-9 shadow-2xs">
-
+            className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 font-semibold border-slate-200 text-slate-600 bg-white hover:bg-slate-50 transition-all rounded-xl h-9 shadow-2xs">
             <Download size={13} /> CSV
-
           </Button>
-
           <Button onClick={handleVerifyChain} disabled={verifying} variant="outline" size="sm"
-
-              className="flex items-center gap-1.5 font-semibold border-slate-200 text-slate-600 bg-white hover:bg-slate-50 transition-all rounded-xl h-9 shadow-2xs">
-
+              className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 font-semibold border-slate-200 text-slate-600 bg-white hover:bg-slate-50 transition-all rounded-xl h-9 shadow-2xs whitespace-nowrap">
             <ShieldCheck size={13} className={verifying ? "animate-pulse text-blue-500" : "text-slate-400"} /> {verifying ? 'Verifying...' : 'Verify Chain'}
-
           </Button>
-
           <Button onClick={() => handleExport('pdf')} size="sm"
-
-            className="flex items-center gap-1.5 font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 transition-all rounded-xl h-9 shadow-2xs">
-
+            className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 transition-all rounded-xl h-9 shadow-2xs">
             <Download size={13} /> PDF
-
           </Button>
-
         </div>
 
       </div>
 
 
 
-      <div className="flex flex-wrap items-center gap-4 mb-5">
-
-        <div className="flex items-center gap-2">
-
-          <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Module:</label>
-
-          <select className="border border-slate-200 rounded-xl px-3 py-1.5 text-xs font-semibold text-slate-700 bg-white hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500 transition-all duration-200 shadow-3xs cursor-pointer"
-
-            value={module} onChange={e => setModule(e.target.value)}>
-
-            <option value="">All Modules</option>
-
-            {modules.map(m => (
-
-              <option key={m} value={m}>{m.charAt(0).toUpperCase() + m.slice(1)}</option>
-
-            ))}
-
-          </select>
-
+      <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center justify-between gap-4 mb-5">
+        <div className="flex flex-wrap items-center gap-4">
+          <div className="flex items-center gap-2">
+            <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider shrink-0">Module:</label>
+            <select className="w-full sm:w-auto border border-slate-200 rounded-xl px-3 py-1.5 text-xs font-semibold text-slate-700 bg-white hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500 transition-all duration-200 shadow-3xs cursor-pointer"
+              value={module} onChange={e => setModule(e.target.value)}>
+              <option value="">All Modules</option>
+              {modules.map(m => (
+                <option key={m} value={m}>{m.charAt(0).toUpperCase() + m.slice(1)}</option>
+              ))}
+            </select>
+          </div>
+          <div className="flex items-center gap-2">
+            <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider shrink-0">Show:</label>
+            <select className="w-full sm:w-auto border border-slate-200 rounded-xl px-3 py-1.5 text-xs font-semibold text-slate-700 bg-white hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500 transition-all duration-200 shadow-3xs cursor-pointer"
+              value={limit} onChange={e => setLimit(Number(e.target.value))}>
+              <option value={100}>Last 100</option>
+              <option value={200}>Last 200</option>
+              <option value={500}>Last 550</option>
+              <option value={1000}>Last 1000</option>
+            </select>
+          </div>
         </div>
-
-        <div className="flex items-center gap-2">
-
-          <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Show:</label>
-
-          <select className="border border-slate-200 rounded-xl px-3 py-1.5 text-xs font-semibold text-slate-700 bg-white hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500 transition-all duration-200 shadow-3xs cursor-pointer"
-
-            value={limit} onChange={e => setLimit(Number(e.target.value))}>
-
-            <option value={100}>Last 100</option>
-
-            <option value={200}>Last 200</option>
-
-            <option value={500}>Last 550</option>
-
-            <option value={1000}>Last 1000</option>
-
-          </select>
-
-        </div>
-
-        <span className="text-xs font-semibold text-slate-400 bg-slate-50 border border-slate-100 rounded-lg px-2.5 py-1 ml-auto shadow-3xs">
-
+        <span className="self-start sm:self-auto text-xs font-semibold text-slate-400 bg-slate-50 border border-slate-100 rounded-lg px-2.5 py-1 shadow-3xs">
           {logs.length} record{logs.length !== 1 ? 's' : ''}
-
         </span>
-
       </div>
 
 
@@ -455,53 +420,43 @@ export default function AuditLogs() {
 
 
 
-            {totalPages > 1 && (
+            {totalPages > 1 && (() => {
+              const getVisiblePages = () => {
+                if (totalPages <= 5) return Array.from({ length: totalPages }, (_, i) => i + 1);
+                if (page <= 3) return [1, 2, 3, 4, '...', totalPages];
+                if (page >= totalPages - 2) return [1, '...', totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
+                return [1, '...', page - 1, page, page + 1, '...', totalPages];
+              };
 
-              <div className="flex items-center justify-between px-5 py-4 border-t border-slate-100 bg-slate-50/10">
-
-                <p className="text-xs text-slate-400 font-semibold">
-
-                  Showing {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, logs.length)} of {logs.length}
-
-                </p>
-
-                <div className="flex items-center gap-1">
-
-                  <Button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}
-
-                    variant="outline" size="sm" className="p-0 w-8 h-8 rounded-lg border-slate-200 hover:bg-slate-50 disabled:opacity-30">
-
-                    <ChevronLeft size={15} className="text-slate-600" />
-
-                  </Button>
-
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
-
-                    <Button key={p} onClick={() => setPage(p)}
-
-                      variant={p === page ? 'default' : 'outline'} size="sm"
-
-                      className={`w-8 h-8 p-0 rounded-lg text-xs font-semibold transition-all ${p === page ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white border-transparent shadow-xs' : 'border-slate-200 text-slate-600 bg-white hover:bg-slate-50'}`}>
-
-                      {p}
-
+              return (
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-5 py-4 border-t border-slate-100 bg-slate-50/10 text-center sm:text-left">
+                  <p className="text-xs text-slate-400 font-semibold">
+                    Showing {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, logs.length)} of {logs.length}
+                  </p>
+                  <div className="flex flex-wrap justify-center items-center gap-1 sm:gap-1.5">
+                    <Button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}
+                      variant="outline" size="sm" className="p-0 w-8 h-8 rounded-lg border-slate-200 hover:bg-slate-50 disabled:opacity-30">
+                      <ChevronLeft size={15} className="text-slate-600" />
                     </Button>
-
-                  ))}
-
-                  <Button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages}
-
-                    variant="outline" size="sm" className="p-0 w-8 h-8 rounded-lg border-slate-200 hover:bg-slate-50 disabled:opacity-30">
-
-                    <ChevronRight size={15} className="text-slate-600" />
-
-                  </Button>
-
+                    {getVisiblePages().map((p, idx) => (
+                      p === '...' ? (
+                        <span key={`dots-${idx}`} className="px-1.5 text-slate-400 text-xs font-semibold tracking-widest">...</span>
+                      ) : (
+                        <Button key={p} onClick={() => setPage(p)}
+                          variant={p === page ? 'default' : 'outline'} size="sm"
+                          className={`w-8 h-8 p-0 rounded-lg text-xs font-semibold transition-all ${p === page ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white border-transparent shadow-xs' : 'border-slate-200 text-slate-600 bg-white hover:bg-slate-50'}`}>
+                          {p}
+                        </Button>
+                      )
+                    ))}
+                    <Button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages}
+                      variant="outline" size="sm" className="p-0 w-8 h-8 rounded-lg border-slate-200 hover:bg-slate-50 disabled:opacity-30">
+                      <ChevronRight size={15} className="text-slate-600" />
+                    </Button>
+                  </div>
                 </div>
-
-              </div>
-
-            )}
+              );
+            })()}
 
           </>
 

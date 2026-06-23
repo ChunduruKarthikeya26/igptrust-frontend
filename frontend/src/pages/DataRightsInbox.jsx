@@ -606,7 +606,7 @@ export default function DataRightsInbox() {
 
               size="sm"
 
-              className="flex items-center gap-1.5 font-semibold border-slate-200 text-slate-600 bg-white hover:bg-slate-50 hover:text-slate-800 transition-all duration-150 rounded-full"
+              className="flex items-center gap-1.5 font-semibold border-slate-200 text-white hover:bg-slate-50 hover:text-slate-800 transition-all duration-150 rounded-full bg-blue-600"
 
             >
 

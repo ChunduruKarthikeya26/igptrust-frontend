@@ -95,7 +95,6 @@ export default function DialogVersions() {
   const [expanded, setExpanded] = useState({})
   const [versions, setVersions] = useState({})  // dialogId → versions[]
   const [loading, setLoading]   = useState(false)
-  const [error, setError]       = useState(null)
 
   // Modals
   const [showNewDialog, setShowNewDialog]   = useState(false)
@@ -117,7 +116,7 @@ export default function DialogVersions() {
         setWebsites(list)
         if (list.length > 0) setSelectedWebsite(list[0].id)
       })
-      .catch(() => setError('Failed to load websites'))
+      .catch(() => toast.error('Failed to load websites'))
       .finally(() => setWebsitesLoading(false))
   }, [])
 
@@ -125,7 +124,6 @@ export default function DialogVersions() {
   const fetchDialogs = async (websiteId) => {
     if (!websiteId) return
     setLoading(true)
-    setError(null)
     setDialogs([])
     setExpanded({})
     setVersions({})
@@ -133,7 +131,7 @@ export default function DialogVersions() {
       const res = await api.get(`/dialogs?website_id=${websiteId}`)
       setDialogs(res.data || [])
     } catch {
-      setError('Failed to load dialogs')
+      toast.error('Failed to load dialogs')
     } finally {
       setLoading(false)
     }
@@ -267,7 +265,7 @@ export default function DialogVersions() {
             Consent Dialog Versions
           </h2>
           <p className="text-sm text-gray-500 mt-1">
-            Manage versioned consent notices · DPDP Act Section 6–7
+            Manage versioned consent notices · DPDP Act <span className="whitespace-nowrap">Section 6–7</span>
           </p>
         </div>
         <Button
@@ -305,10 +303,6 @@ export default function DialogVersions() {
           </Select>
         </div>
       </div>
-
-      {error && (
-        <div className="p-3 bg-red-50 border border-red-100 rounded-xl text-sm text-red-600">{error}</div>
-      )}
 
       {/* Dialog list */}
       {loading ? (

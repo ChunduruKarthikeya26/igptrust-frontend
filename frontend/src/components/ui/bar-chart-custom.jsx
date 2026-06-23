@@ -59,33 +59,20 @@ export function ChartBarLabelCustom({ websitesStats = [] }) {
           Consent response distribution per domain
         </CardDescription>
       </CardHeader>
-      <CardContent className="pb-0 flex-1 flex items-center justify-center min-h-[200px]">
+      <CardContent className="pb-0 flex-1 flex items-center justify-center min-h-[250px]">
         {chartData.length === 0 ? (
           <div className="text-muted-foreground text-sm py-12">No website data available</div>
         ) : (
           <ChartContainer config={chartConfig} className="w-full">
-            <BarChart
-              accessibilityLayer
-              data={chartData}
-              layout="vertical"
-              margin={{
-                left: 0,
-                right: 32,
-                top: 10,
-                bottom: 10,
-              }}
-              barSize={20}
-            >
-              <CartesianGrid horizontal={false} className="stroke-muted/30" />
-              <YAxis
+            <BarChart accessibilityLayer data={chartData}>
+              <CartesianGrid vertical={false} className="stroke-muted/30" />
+              <XAxis
                 dataKey="domain"
-                type="category"
                 tickLine={false}
-                tickMargin={8}
+                tickMargin={10}
                 axisLine={false}
-                width={90}
+                tickFormatter={(value) => value.length > 10 ? value.slice(0, 10) + '...' : value}
               />
-              <XAxis dataKey="total" type="number" hide />
               <ChartTooltip
                 cursor={false}
                 content={
@@ -95,14 +82,12 @@ export function ChartBarLabelCustom({ websitesStats = [] }) {
                     formatter={(value, name, item, index) => (
                       <>
                         <div
-                          className="h-2.5 w-2.5 shrink-0 rounded-[2px]"
+                          className="h-2.5 w-2.5 shrink-0 rounded-[2px] bg-[var(--color-bg)]"
                           style={{
-                            backgroundColor: `var(--color-${name})`,
+                            "--color-bg": `var(--color-${name})`,
                           }}
                         />
-                        <span className="text-muted-foreground">
-                          {chartConfig[name]?.label || name}
-                        </span>
+                        {chartConfig[name]?.label || name}
                         <div className="ml-auto flex items-baseline gap-0.5 font-mono font-medium text-foreground tabular-nums">
                           {value}
                           <span className="font-normal text-muted-foreground text-[10px] ml-0.5">
@@ -125,27 +110,18 @@ export function ChartBarLabelCustom({ websitesStats = [] }) {
                   />
                 }
               />
-              <Bar dataKey="accepted_all" stackId="a" fill="var(--color-accepted_all)" radius={[4, 0, 0, 4]} />
-              <Bar dataKey="rejected_all" stackId="a" fill="var(--color-rejected_all)" />
-              <Bar dataKey="customized" stackId="a" fill="var(--color-customized)" />
-              <Bar dataKey="withdrawn" stackId="a" fill="var(--color-withdrawn)" radius={[0, 4, 4, 0]} />
-              <Bar dataKey="total" fill="transparent" minPointSize={0} tooltipType="none">
-                <LabelList
-                  dataKey="total"
-                  position="right"
-                  offset={10}
-                  className="fill-foreground font-semibold text-[11px]"
-                />
-              </Bar>
-              <ChartLegend content={<ChartLegendContent />} className="text-[11px] font-medium" />
+              <Bar dataKey="accepted_all" fill="var(--color-accepted_all)" radius={4} />
+              <Bar dataKey="rejected_all" fill="var(--color-rejected_all)" radius={4} />
+              <Bar dataKey="customized" fill="var(--color-customized)" radius={4} />
+              <Bar dataKey="withdrawn" fill="var(--color-withdrawn)" radius={4} />
+              <ChartLegend content={<ChartLegendContent />} className="text-[11px] font-medium mt-2" />
             </BarChart>
           </ChartContainer>
         )}
       </CardContent>
-      <CardFooter className="flex-col gap-1.5 text-xs border-t bg-muted/10 px-6 py-4 rounded-b-xl mt-4">
+      <CardFooter className="flex-col items-start gap-1.5 text-xs border-t bg-muted/10 px-6 py-4 rounded-b-xl mt-4">
         <div className="flex items-center gap-2 font-medium text-foreground">
-          <Activity className="h-4 w-4 text-primary" />
-          Real-time logs active
+          Trending up based on active logs <Activity className="h-4 w-4 text-primary" />
         </div>
         <div className="text-muted-foreground">
           Tracking a total of {totalConsents.toLocaleString()} responses across {chartData.length} domains

@@ -122,7 +122,7 @@ export default function Login() {
               </p>
             </div>
           ) : (
-            <div className="bg-white p-10 rounded-2xl shadow-xl border border-gray-100 w-full max-w-xl h-fit">
+            <div className="bg-white p-6 md:p-10 rounded-2xl shadow-xl border border-gray-100 w-full max-w-xl h-fit">
               <div className="text-center mb-6">
                 <div className="w-12 h-12 bg-orange-50 rounded-2xl flex items-center justify-center mx-auto mb-3">
                   <KeyRound size={22} className="text-orange-500" />

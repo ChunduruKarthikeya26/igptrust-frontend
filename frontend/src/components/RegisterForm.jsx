@@ -26,7 +26,7 @@ export default function RegisterForm({ formData, onChange, onSubmit, loading }) 
   const isMatching = password && password === confirmPassword;
 
   return (
-    <div className="bg-white p-10 rounded-2xl shadow-xl border border-gray-100 w-full max-w-xl h-fit">
+    <div className="bg-white p-6 md:p-10 rounded-2xl shadow-xl border border-gray-100 w-full max-w-xl h-fit">
       <div className="mb-6 text-left">
         <h2 className="text-2xl font-bold text-slate-850">Create account</h2>
         <p className="text-sm text-slate-500 mt-1">Start managing cookie consent today</p>

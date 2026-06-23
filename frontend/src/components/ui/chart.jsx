@@ -179,8 +179,8 @@ function ChartTooltipContent({
                       <itemConfig.icon />
                     ) : (
                       !hideIndicator && (
-                        <div
-                          className={cn("shrink-0 rounded-[2px] border-(--color-border) bg-(--color-bg)", {
+                          <div
+                            className={cn("shrink-0 rounded-[2px] border-[var(--color-border)] bg-[var(--color-bg)]", {
                             "h-2.5 w-2.5": indicator === "dot",
                             "w-1": indicator === "line",
                             "w-0 border-[1.5px] border-dashed bg-transparent":
@@ -242,7 +242,7 @@ function ChartLegendContent({
   return (
     <div
       className={cn(
-        "flex items-center justify-center gap-4",
+        "flex flex-wrap items-center justify-center gap-x-4 gap-y-2",
         verticalAlign === "top" ? "pb-3" : "pt-3",
         className
       )}>

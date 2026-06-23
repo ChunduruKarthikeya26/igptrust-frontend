@@ -201,7 +201,7 @@ export default function Notifications() {
               disabled={historyLoading}
               variant="outline"
               size="sm"
-              className="flex items-center gap-1.5 font-semibold border-slate-200 text-slate-600 bg-white hover:bg-slate-50 hover:text-slate-800 transition-all duration-150 rounded-full h-9"
+              className="flex items-center gap-1.5 font-semibold border-slate-200 text-white bg-blue-600 hover:bg-blue-700 hover:text-slate-800 transition-all duration-150 rounded-full h-9"
             >
               <RefreshCw size={13} className={historyLoading ? 'animate-spin' : ''} />
               {historyLoading ? 'Refreshing...' : 'Refresh'}

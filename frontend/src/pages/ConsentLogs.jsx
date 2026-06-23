@@ -110,27 +110,34 @@ export default function ConsentLogs() {
           <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Consent Logs</h1>
           <p className="text-sm text-gray-500 mt-1">Audit and export cookie consent actions logged by visitors across your websites.</p>
         </div>
-        <div className="flex gap-2 shrink-0">
+        <div className="flex w-full sm:w-auto items-center gap-2 shrink-0">
           <Button
             onClick={() => handleExport('csv')}
             variant="outline"
-            className="rounded-xl shadow-2xs font-semibold hover:bg-gray-50 active:scale-[0.98] cursor-pointer"
+            size="sm"
+            className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 font-semibold border-slate-200 text-slate-600 bg-white hover:bg-slate-50 hover:text-slate-800 transition-all duration-150 rounded-full cursor-pointer"
           >
-            <Download className="w-4 h-4 text-gray-500" /> CSV
+            <Download size={13} /> CSV
           </Button>
           <Button
             onClick={() => handleExport('pdf')}
-            variant="outline"
-            className="rounded-xl shadow-2xs font-semibold hover:bg-gray-50 active:scale-[0.98] cursor-pointer"
+            size="sm"
+            className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 font-semibold bg-blue-600 text-white hover:bg-blue-800 transition-all duration-150 rounded-full cursor-pointer"
           >
-            <Download className="w-4 h-4 text-gray-500" /> PDF
+            <Download size={13} /> PDF
           </Button>
         </div>
       </div>
 
-      {/* Premium Stats Cards */}
-      {stats && (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+      {/* Stats Grid */}
+      {loading ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+          {[...Array(5)].map((_, i) => (
+            <Skeleton key={i} className="h-24 w-full rounded-xl" />
+          ))}
+        </div>
+      ) : stats && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
           <Card className="border-l-4 border-l-blue-500 shadow-2xs hover:shadow-xs transition-all duration-200">
             <CardHeader className="p-4 pb-2">
               <CardDescription className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Total Consents</CardDescription>
@@ -194,7 +201,7 @@ export default function ConsentLogs() {
           <DropdownMenuTrigger asChild>
             <Button
               variant="outline"
-              className="flex items-center justify-between gap-2 px-4 py-2.5 text-sm border border-gray-200 bg-white hover:bg-gray-50 focus:outline-none font-semibold text-gray-700 transition-all duration-200 cursor-pointer rounded-xl min-w-[170px] shadow-2xs"
+              className="flex w-full sm:w-auto items-center justify-between gap-2 px-4 py-2.5 text-sm border border-gray-200 bg-white hover:bg-gray-50 focus:outline-none font-semibold text-gray-700 transition-all duration-200 cursor-pointer rounded-xl sm:min-w-[170px] shadow-2xs"
             >
               <span className="flex items-center gap-2">
                 <Globe className="w-4 h-4 text-gray-400 shrink-0" />
@@ -228,7 +235,7 @@ export default function ConsentLogs() {
           <DropdownMenuTrigger asChild>
             <Button
               variant="outline"
-              className="flex items-center justify-between gap-2 px-4 py-2.5 text-sm border border-gray-200 bg-white hover:bg-gray-50 focus:outline-none font-semibold text-gray-700 transition-all duration-200 cursor-pointer rounded-xl min-w-[170px] shadow-2xs"
+              className="flex w-full sm:w-auto items-center justify-between gap-2 px-4 py-2.5 text-sm border border-gray-200 bg-white hover:bg-gray-50 focus:outline-none font-semibold text-gray-700 transition-all duration-200 cursor-pointer rounded-xl sm:min-w-[170px] shadow-2xs"
             >
               <span>
                 {statusFilter === 'all'
@@ -357,16 +364,16 @@ export default function ConsentLogs() {
                     </TableRow>
                     {expandedId === log.id && (
                       <TableRow className="bg-gray-50/50 hover:bg-gray-50/50">
-                        <TableCell colSpan={8} className="px-6 py-4 text-xs text-gray-500">
-                          <Card className="bg-white p-6 shadow-2xs border border-gray-100 rounded-2xl">
+                        <TableCell colSpan={8} className="p-3 sm:px-6 sm:py-4 text-xs text-gray-500">
+                          <Card className="bg-white p-4 sm:p-6 shadow-2xs border border-gray-100 rounded-2xl overflow-hidden">
                             <CardContent className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 p-0 animate-in fade-in slide-in-from-top-2 duration-250">
                               <div>
                                 <span className="font-bold text-gray-800 block mb-1">Visitor ID</span>
-                                <span className="font-mono text-xs select-all bg-gray-50/50 px-2 py-1 rounded border border-gray-100">{log.visitor_id}</span>
+                                <span className="font-mono text-xs select-all bg-gray-50/50 px-2 py-1 rounded border border-gray-100 break-all">{log.visitor_id}</span>
                               </div>
                               <div>
                                 <span className="font-bold text-gray-800 block mb-1">Source ID</span>
-                                <span className="font-mono text-xs text-purple-600 bg-purple-50/50 px-2 py-1 rounded border border-purple-100">{log.source_id || '—'}</span>
+                                <span className="font-mono text-xs text-purple-600 bg-purple-50/50 px-2 py-1 rounded border border-purple-100 break-all">{log.source_id || '—'}</span>
                               </div>
                               <div>
                                 <span className="font-bold text-gray-800 block mb-1">Method</span>
@@ -387,7 +394,7 @@ export default function ConsentLogs() {
                                 </span>
                               </div>
                               {log.consent_given_by === 'guardian' && (
-                                <div className="col-span-1 sm:col-span-2 md:col-span-3 p-3 bg-amber-50/50 border border-amber-100 rounded-xl flex items-center gap-2">
+                                <div className="col-span-1 sm:col-span-2 md:col-span-3 p-3 bg-amber-50/50 border border-amber-100 rounded-xl flex flex-wrap items-center gap-2">
                                   <span className="font-bold text-amber-800">👨‍👧 Guardian Details:</span>{' '}
                                   <span className="text-amber-900 font-bold">{log.guardian_name}</span>
                                   <span className="text-amber-600 font-semibold">({log.guardian_relationship?.replace(/_/g, ' ')})</span>
@@ -436,34 +443,46 @@ export default function ConsentLogs() {
           </Table>
 
           {/* Pagination */}
-          {totalPages > 1 && (
-            <div className="flex items-center justify-between px-6 py-4 bg-gray-50/50 border-t border-gray-100">
-              <p className="text-xs text-gray-400">
-                Showing <span className="font-semibold text-gray-600" style={{ fontFeatureSettings: '"tnum"' }}>{(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, consents.length)}</span> of{' '}
-                <span className="font-semibold text-gray-600" style={{ fontFeatureSettings: '"tnum"' }}>{consents.length}</span> logs
-              </p>
-              <div className="flex items-center gap-1">
-                <Button
-                  variant="outline"
-                  size="icon-sm"
-                  onClick={() => setPage(p => Math.max(1, p - 1))}
-                  disabled={page === 1}
-                  className="rounded-lg disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
-                >
-                  <ChevronLeft className="w-4 h-4" />
-                </Button>
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
+          {totalPages > 1 && (() => {
+            const getVisiblePages = () => {
+              if (totalPages <= 5) return Array.from({ length: totalPages }, (_, i) => i + 1);
+              if (page <= 3) return [1, 2, 3, 4, '...', totalPages];
+              if (page >= totalPages - 2) return [1, '...', totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
+              return [1, '...', page - 1, page, page + 1, '...', totalPages];
+            };
+
+            return (
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-4 bg-gray-50/50 border-t border-gray-100 text-center sm:text-left">
+                <p className="text-xs text-gray-400">
+                  Showing <span className="font-semibold text-gray-600" style={{ fontFeatureSettings: '"tnum"' }}>{(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, consents.length)}</span> of{' '}
+                  <span className="font-semibold text-gray-600" style={{ fontFeatureSettings: '"tnum"' }}>{consents.length}</span> logs
+                </p>
+                <div className="flex flex-wrap justify-center items-center gap-1 sm:gap-1.5">
                   <Button
-                    key={p}
-                    variant={p === page ? "default" : "outline"}
+                    variant="outline"
                     size="icon-sm"
-                    onClick={() => setPage(p)}
-                    className={`w-8 h-8 rounded-lg text-xs font-semibold cursor-pointer ${p === page ? 'bg-blue-600 text-white border-blue-600 hover:bg-blue-700' : 'text-gray-600 bg-white hover:bg-gray-50 border-gray-200'}`}
-                    style={{ fontFeatureSettings: '"tnum"' }}
+                    onClick={() => setPage(p => Math.max(1, p - 1))}
+                    disabled={page === 1}
+                    className="rounded-lg disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
                   >
-                    {p}
+                    <ChevronLeft className="w-4 h-4" />
                   </Button>
-                ))}
+                  {getVisiblePages().map((p, idx) => (
+                    p === '...' ? (
+                      <span key={`dots-${idx}`} className="px-1.5 text-gray-400 text-xs font-semibold tracking-widest">...</span>
+                    ) : (
+                      <Button
+                        key={p}
+                        variant={p === page ? "default" : "outline"}
+                        size="icon-sm"
+                        onClick={() => setPage(p)}
+                        className={`w-8 h-8 rounded-lg text-xs font-semibold cursor-pointer ${p === page ? 'bg-blue-600 text-white border-blue-600 hover:bg-blue-700 shadow-xs' : 'text-gray-600 bg-white hover:bg-gray-50 border-gray-200'}`}
+                        style={{ fontFeatureSettings: '"tnum"' }}
+                      >
+                        {p}
+                      </Button>
+                    )
+                  ))}
                 <Button
                   variant="outline"
                   size="icon-sm"
@@ -475,7 +494,8 @@ export default function ConsentLogs() {
                 </Button>
               </div>
             </div>
-          )}
+            );
+          })()}
         </div>
       )}
     </div>

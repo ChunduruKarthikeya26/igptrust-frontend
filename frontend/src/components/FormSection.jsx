@@ -47,7 +47,7 @@ export default function LoginForm({ formData, onChange, onSubmit, loading }) {
   };
 
   return (
-    <div className="bg-white p-10 rounded-2xl shadow-xl border border-gray-100 w-full max-w-xl h-fit">
+    <div className="bg-white p-6 md:p-10 rounded-2xl shadow-xl border border-gray-100 w-full max-w-xl h-fit">
       <form
         name="email-form"
         data-name="Email Form"
@@ -55,36 +55,19 @@ export default function LoginForm({ formData, onChange, onSubmit, loading }) {
         className="w-full text-left"
         onSubmit={handleSubmit}
       >
-        {/* Name row */}
-        <div className="div-block-38 grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        {/* Name field */}
+        <div className="div-block-39 mb-6">
           <div className="hs_input_block-2">
-            <label className={labelClass} htmlFor="firstname-3">
-              First Name <span className="text-blue-500">*</span>
+            <label className={labelClass} htmlFor="name-3">
+              Name <span className="text-blue-500">*</span>
             </label>
 
             <input
               type="text"
-              id="firstname-3"
-              name="firstName"
-              placeholder="First Name"
-              value={formData.firstName}
-              onChange={handleChange}
-              required
-              className={`${inputClass} hs_input-2 w-input h-[46px] py-0`}
-            />
-          </div>
-
-          <div className="hs_input_block-2">
-            <label className={labelClass} htmlFor="lastname-5">
-              Last Name <span className="text-blue-500">*</span>
-            </label>
-
-            <input
-              type="text"
-              id="lastname-5"
-              name="lastName"
-              placeholder="Last Name"
-              value={formData.lastName}
+              id="name-3"
+              name="name"
+              placeholder="Name"
+              value={formData.name || ''}
               onChange={handleChange}
               required
               className={`${inputClass} hs_input-2 w-input h-[46px] py-0`}

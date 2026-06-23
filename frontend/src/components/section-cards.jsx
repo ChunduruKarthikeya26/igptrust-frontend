@@ -18,7 +18,7 @@ export function SectionCards({
 }) {
   return (
     <div
-      className="grid grid-cols-2 lg:grid-cols-4 gap-4 px-4 lg:px-6">
+      className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 px-4 lg:px-6">
       {/* Total Websites */}
       <Card className="bg-card border border-border/50 shadow-xs hover:shadow-sm transition-all duration-200">
         <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">

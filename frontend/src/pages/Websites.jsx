@@ -159,18 +159,19 @@ export default function Websites() {
   }
 
   return (
+    <>
     <div className="max-w-7xl mx-auto space-y-8 animate-in fade-in duration-500 pb-12">
       
       {/* Header Panel */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-3xl font-semibold text-[#061b31] tracking-tight">Websites</h2>
-          <p className="text-sm text-gray-500 mt-1.5">Configure your domains, active widgets, and compliance scanners</p>
+          <h2 className="text-xl sm:text-2xl font-extrabold tracking-tight text-black">Websites</h2>
+          <p className="text-sm sm:text-base font-medium text-slate-500 mt-1 max-w-2xl leading-relaxed">Configure your domains, active widgets, and compliance scanners</p>
         </div>
         <button
           onClick={() => setShowAddModal(true)}
           className="flex items-center gap-2 bg-[#533afd] text-white px-5 py-2.5
-                     rounded-lg text-sm font-semibold shadow-sm hover:bg-[#4434d4]
+                     rounded-full text-sm font-semibold shadow-sm hover:bg-[#4434d4]
                      transition-all duration-300 active:scale-[0.98]"
         >
           <Plus size={16} /> Add Website
@@ -282,7 +283,7 @@ export default function Websites() {
         </div>
 
         {/* View Toggle */}
-        <div className="flex items-center gap-3 self-end md:self-auto border-t md:border-t-0 pt-3 md:pt-0 border-gray-100">
+        <div className="hidden md:flex items-center gap-3 self-auto border-t-0 pt-0 border-gray-100">
           <span className="text-xs text-gray-400 font-medium">Layout:</span>
           <div className="flex bg-gray-50 p-1 rounded-lg border border-gray-200/50">
             <button
@@ -365,7 +366,7 @@ export default function Websites() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="text-left bg-gray-50/80 text-gray-500 text-xs font-semibold uppercase tracking-wider border-b border-[#e5edf5]">
+                <tr className="text-left bg-gray-50/80 text-gray-500 text-xs font-semibold uppercase tracking-wider border-b border-[#e5edf5] whitespace-nowrap">
                   <th className="px-6 py-4">Website</th>
                   <th className="px-6 py-4">Domain URL</th>
                   <th className="px-6 py-4">Widget Key</th>
@@ -375,7 +376,7 @@ export default function Websites() {
                   <th className="px-6 py-4 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody className="divide-y divide-gray-100 whitespace-nowrap">
                 {filteredWebsites.map(site => (
                   <tr key={site.id} className="hover:bg-gray-50/50 transition-colors group">
                     {/* Name */}
@@ -605,10 +606,11 @@ export default function Websites() {
           ))}
         </div>
       )}
+    </div>
 
       {/* MODAL: Get Integration Code */}
       {activeCodeSite && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-in fade-in duration-200">
           <div 
             className="bg-white rounded-xl max-w-2xl w-full border border-gray-100 overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200"
             onClick={e => e.stopPropagation()}
@@ -684,7 +686,7 @@ export default function Websites() {
 
       {/* MODAL: Add Website */}
       {showAddModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-in fade-in duration-200">
           <div 
             className="bg-white rounded-xl max-w-lg w-full border border-gray-100 overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200"
             onClick={e => e.stopPropagation()}
@@ -760,6 +762,6 @@ export default function Websites() {
         </div>
       )}
 
-    </div>
+    </>
   )
 }

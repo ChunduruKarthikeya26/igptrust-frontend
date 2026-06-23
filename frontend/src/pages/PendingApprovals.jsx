@@ -334,7 +334,7 @@ export default function PendingApprovals() {
             size="sm"
             onClick={fetchPending}
             disabled={loading}
-            className="flex items-center gap-1.5 font-semibold border-slate-200 text-slate-600 bg-white hover:bg-slate-50 hover:text-slate-800 transition-all duration-150 rounded-full h-9 shadow-2xs"
+            className="flex items-center gap-1.5 font-semibold border-slate-200 text-white bg-blue-600 hover:bg-blue-700 hover:text-slate-800 transition-all duration-150 rounded-full h-9 shadow-2xs"
           >
             <RefreshCw size={13} className={loading ? 'animate-spin' : ''} />
             Refresh

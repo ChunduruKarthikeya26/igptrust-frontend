@@ -328,102 +328,92 @@ export default function ConsentValidation() {
           )}
         </div>
         
-        <div className="overflow-x-auto">
-          <Table>
-            <colgroup>
-              <col style={{ width: '150px' }} />
-              <col style={{ width: '120px' }} />
-              <col style={{ width: '110px' }} />
-              <col style={{ width: '110px' }} />
-              <col style={{ width: '155px' }} />
-              <col style={{ width: '145px' }} />
-              <col style={{ width: '145px' }} />
-            </colgroup>
-            <TableHeader>
-              <TableRow className="border-b border-gray-100 hover:bg-transparent bg-white">
-                <TableHead className="px-3 py-2.5 text-left text-[10px] font-semibold text-gray-400 tracking-widest uppercase whitespace-nowrap">Visitor ID</TableHead>
-                <TableHead className="px-3 py-2.5 text-left text-[10px] font-semibold text-gray-400 tracking-widest uppercase whitespace-nowrap">Purpose</TableHead>
-                <TableHead className="px-3 py-2.5 text-left text-[10px] font-semibold text-gray-400 tracking-widest uppercase whitespace-nowrap">Result</TableHead>
-                <TableHead className="px-3 py-2.5 text-left text-[10px] font-semibold text-gray-400 tracking-widest uppercase whitespace-nowrap">Status</TableHead>
-                <TableHead className="px-3 py-2.5 text-left text-[10px] font-semibold text-gray-400 tracking-widest uppercase whitespace-nowrap">Failure Reason</TableHead>
-                <TableHead className="px-3 py-2.5 text-left text-[10px] font-semibold text-gray-400 tracking-widest uppercase whitespace-nowrap">Expires At</TableHead>
-                <TableHead className="px-3 py-2.5 text-left text-[10px] font-semibold text-gray-400 tracking-widest uppercase whitespace-nowrap">Checked At</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody className="divide-y divide-gray-100 bg-white">
-              {loading && [...Array(6)].map((_, i) => <SkeletonRow key={i} />)}
-              
-              {!loading && !selectedSite && (
-                <TableRow className="hover:bg-transparent">
-                  <TableCell colSpan={7} className="p-0">
-                    <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
-                      <div className="w-12 h-12 rounded-full bg-slate-50 flex items-center justify-center mb-3 border border-slate-100 shadow-3xs">
-                        <Globe className="w-5 h-5 text-slate-400" />
-                      </div>
-                      <h3 className="text-sm font-semibold text-slate-805 mb-1">Select a Website</h3>
-                      <p className="text-xs text-slate-500 max-w-xs leading-relaxed font-medium">
-                        Select a website from the dropdown above to view its compliance validation logs.
-                      </p>
-                    </div>
-                  </TableCell>
+        {(!loading && !selectedSite) ? (
+          <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
+            <div className="w-12 h-12 rounded-full bg-slate-50 flex items-center justify-center mb-3 border border-slate-100 shadow-3xs">
+              <Globe className="w-5 h-5 text-slate-400" />
+            </div>
+            <h3 className="text-sm font-semibold text-slate-805 mb-1">Select a Website</h3>
+            <p className="text-xs text-slate-500 max-w-xs leading-relaxed font-medium">
+              Select a website from the dropdown above to view its compliance validation logs.
+            </p>
+          </div>
+        ) : (!loading && selectedSite && logs.length === 0) ? (
+          <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
+            <div className="w-12 h-12 rounded-full bg-slate-50 flex items-center justify-center mb-3 border border-slate-100 shadow-3xs">
+              <Inbox className="w-5 h-5 text-slate-400" />
+            </div>
+            <h3 className="text-sm font-semibold text-slate-805 mb-1">No Validation Logs</h3>
+            <p className="text-xs text-slate-500 max-w-xs leading-relaxed font-medium">
+              All clear! There are no validation check logs recorded for this website yet.
+            </p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <Table>
+              <colgroup>
+                <col style={{ width: '150px' }} />
+                <col style={{ width: '120px' }} />
+                <col style={{ width: '110px' }} />
+                <col style={{ width: '110px' }} />
+                <col style={{ width: '155px' }} />
+                <col style={{ width: '145px' }} />
+                <col style={{ width: '145px' }} />
+              </colgroup>
+              <TableHeader>
+                <TableRow className="border-b border-gray-100 hover:bg-transparent bg-white">
+                  <TableHead className="px-3 py-2.5 text-left text-[10px] font-semibold text-gray-400 tracking-widest uppercase whitespace-nowrap">Visitor ID</TableHead>
+                  <TableHead className="px-3 py-2.5 text-left text-[10px] font-semibold text-gray-400 tracking-widest uppercase whitespace-nowrap">Purpose</TableHead>
+                  <TableHead className="px-3 py-2.5 text-left text-[10px] font-semibold text-gray-400 tracking-widest uppercase whitespace-nowrap">Result</TableHead>
+                  <TableHead className="px-3 py-2.5 text-left text-[10px] font-semibold text-gray-400 tracking-widest uppercase whitespace-nowrap">Status</TableHead>
+                  <TableHead className="px-3 py-2.5 text-left text-[10px] font-semibold text-gray-400 tracking-widest uppercase whitespace-nowrap">Failure Reason</TableHead>
+                  <TableHead className="px-3 py-2.5 text-left text-[10px] font-semibold text-gray-400 tracking-widest uppercase whitespace-nowrap">Expires At</TableHead>
+                  <TableHead className="px-3 py-2.5 text-left text-[10px] font-semibold text-gray-400 tracking-widest uppercase whitespace-nowrap">Checked At</TableHead>
                 </TableRow>
-              )}
-              
-              {!loading && selectedSite && logs.length === 0 && (
-                <TableRow className="hover:bg-transparent">
-                  <TableCell colSpan={7} className="p-0">
-                    <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
-                      <div className="w-12 h-12 rounded-full bg-slate-50 flex items-center justify-center mb-3 border border-slate-100 shadow-3xs">
-                        <Inbox className="w-5 h-5 text-slate-400" />
-                      </div>
-                      <h3 className="text-sm font-semibold text-slate-805 mb-1">No Validation Logs</h3>
-                      <p className="text-xs text-slate-500 max-w-xs leading-relaxed font-medium">
-                        All clear! There are no validation check logs recorded for this website yet.
-                      </p>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              )}
-              
-              {!loading && logs.map(log => (
-                <TableRow key={log.id} className="hover:bg-slate-50/50 transition-colors border-b border-gray-100">
-                  <TableCell className="px-3 py-3 text-slate-600 font-mono text-xs max-w-[160px] truncate" title={log.visitor_id}>
-                    {log.visitor_id}
-                  </TableCell>
-                  <TableCell className="px-3 py-3 text-slate-600 font-semibold">{log.purpose_id || '—'}</TableCell>
-                  <TableCell className="px-3 py-3">
-                    {log.is_valid ? (
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-50 text-green-700 border border-green-200">
-                        <CheckCircle className="w-3.5 h-3.5 text-green-650" />
-                        Valid
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-50 text-red-700 border border-red-200">
-                        <XCircle className="w-3.5 h-3.5 text-red-500" />
-                        Failed
-                      </span>
-                    )}
-                  </TableCell>
-                  <TableCell className="px-3 py-3">
-                    <ConfigBadge config={log.consent_status ? (STATUS_CONFIG[log.consent_status] ?? DEFAULT_CFG) : null} />
-                  </TableCell>
-                  <TableCell className="px-3 py-3">
-                    <ConfigBadge config={log.failure_reason ? (FAILURE_CONFIG[log.failure_reason] ?? DEFAULT_CFG) : null} />
-                  </TableCell>
-                  <TableCell className="px-3 py-3 text-slate-500 text-xs font-semibold">
-                    {log.expires_at ? (
-                      <span className="flex items-center gap-1">
-                        <Clock className="w-3.5 h-3.5 text-slate-400" />
-                        {fmt(log.expires_at)}
-                      </span>
-                    ) : '—'}
-                  </TableCell>
-                  <TableCell className="px-3 py-3 text-slate-500 text-xs font-semibold">{fmt(log.validated_at)}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
+              </TableHeader>
+              <TableBody className="divide-y divide-gray-100 bg-white">
+                {loading && [...Array(6)].map((_, i) => <SkeletonRow key={i} />)}
+                
+                {!loading && logs.map(log => (
+                  <TableRow key={log.id} className="hover:bg-slate-50/50 transition-colors border-b border-gray-100">
+                    <TableCell className="px-3 py-3 text-slate-600 font-mono text-xs max-w-[160px] truncate" title={log.visitor_id}>
+                      {log.visitor_id}
+                    </TableCell>
+                    <TableCell className="px-3 py-3 text-slate-600 font-semibold">{log.purpose_id || '—'}</TableCell>
+                    <TableCell className="px-3 py-3">
+                      {log.is_valid ? (
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-50 text-green-700 border border-green-200">
+                          <CheckCircle className="w-3.5 h-3.5 text-green-650" />
+                          Valid
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-50 text-red-700 border border-red-200">
+                          <XCircle className="w-3.5 h-3.5 text-red-500" />
+                          Failed
+                        </span>
+                      )}
+                    </TableCell>
+                    <TableCell className="px-3 py-3">
+                      <ConfigBadge config={log.consent_status ? (STATUS_CONFIG[log.consent_status] ?? DEFAULT_CFG) : null} />
+                    </TableCell>
+                    <TableCell className="px-3 py-3">
+                      <ConfigBadge config={log.failure_reason ? (FAILURE_CONFIG[log.failure_reason] ?? DEFAULT_CFG) : null} />
+                    </TableCell>
+                    <TableCell className="px-3 py-3 text-slate-500 text-xs font-semibold">
+                      {log.expires_at ? (
+                        <span className="flex items-center gap-1">
+                          <Clock className="w-3.5 h-3.5 text-slate-400" />
+                          {fmt(log.expires_at)}
+                        </span>
+                      ) : '—'}
+                    </TableCell>
+                    <TableCell className="px-3 py-3 text-slate-500 text-xs font-semibold">{fmt(log.validated_at)}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        )}
       </Card>
     </div>
   )

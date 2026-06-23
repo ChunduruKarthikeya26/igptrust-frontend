@@ -42,7 +42,7 @@ const ICONS = {
   ScanSearch, RefreshCw, AlertTriangle, Bell, Database, BarChart2, Users, Layers, Scale, CheckCircle, Upload,
 }
 
-export default function Sidebar() {
+export default function Sidebar({ mobileOpen, setMobileOpen }) {
   const { pathname } = useLocation()
   const { business } = useAuth()
   const rawRole = business?.role || 'admin'
@@ -118,9 +118,21 @@ export default function Sidebar() {
   }
 
   return (
-    <div
-      className="bg-white border-r border-[#e5edf5] flex flex-col shrink-0 relative
-                 transition-all duration-300 ease-in-out"
+    <>
+      {/* Mobile backdrop overlay */}
+      {mobileOpen && (
+        <div
+          className="fixed inset-0 z-[999] bg-black/50 transition-opacity md:hidden"
+          onClick={() => setMobileOpen?.(false)}
+        />
+      )}
+
+      {/* Sidebar container */}
+      <div
+        className={`bg-white border-r border-[#e5edf5] flex flex-col shrink-0
+                    transition-transform duration-300 ease-in-out md:translate-x-0
+                    ${mobileOpen ? 'translate-x-0' : '-translate-x-full'}
+                    fixed inset-y-0 left-0 z-[1000] md:relative md:z-auto`}
       style={{
         width: collapsed ? '64px' : '240px',
         boxShadow: '1px 0 0 #e5edf5'
@@ -199,5 +211,6 @@ export default function Sidebar() {
         </div>
       )}
     </div>
+    </>
   )
 }
