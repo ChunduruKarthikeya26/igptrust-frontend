@@ -165,7 +165,6 @@ const MainLanding = () => {
   }, []);
 
   return (
-
     <div className="min-h-screen bg-white text-[#111827] font-sans antialiased selection:bg-[#0466C8]/10 selection:text-[#0466C8]">
 
       {/* 0. Navigation Bar */}
@@ -1423,7 +1422,6 @@ const MainLanding = () => {
           </div>
         )}
       </AnimatePresence>
-
 
     </div>
   );
