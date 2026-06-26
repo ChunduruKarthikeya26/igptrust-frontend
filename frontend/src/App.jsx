@@ -42,8 +42,8 @@ export default function App() {
           <TooltipProvider>
             <Toaster position="top-right" toastOptions={{ style: { fontSize: "13px" } }} />
             <Routes>
-              <Route path="/main" element={<MainLanding />} />
-            <Route path="/" element={<LandingPage />} />
+              <Route path="/icmp" element={<LandingPage />} />
+            <Route path="/" element={<MainLanding />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route element={<ProtectedRoute />}>
