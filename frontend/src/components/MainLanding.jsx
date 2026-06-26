@@ -356,28 +356,19 @@ const MainLanding = () => {
             DSR workflows to helping you market and track compliance.
           </motion.p>
 
-          {/* Buttons */}
+          {/* Button */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3, ease: "easeOut" }}
-            className="flex items-center gap-4"
+            className="flex items-center justify-center"
           >
             <button
               onClick={() => setIsDemoModalOpen(true)}
-              className="px-6 py-3 rounded-full font-bold text-white bg-[#111827] hover:bg-slate-800 shadow-lg hover:shadow-xl transition-all flex items-center gap-2 group"
+              className="hero-glow-btn px-8 py-3.5 rounded-full font-bold text-white bg-[#111827] shadow-lg transition-all duration-300 flex items-center gap-2.5 group cursor-pointer text-base tracking-wide"
             >
-
-              Get an Invite
-            </button>
-            <button
-              onClick={() => setIsDemoModalOpen(true)}
-              className="px-6 py-3 rounded-full font-bold text-[#111827] bg-white border border-slate-200 hover:border-slate-300 shadow-sm hover:shadow-md transition-all flex items-center gap-3 group"
-            >
-              <div className="w-6 h-6 rounded-full bg-slate-200 overflow-hidden border border-slate-300">
-                <img src="https://i.pravatar.cc/100?img=11" alt="Avatar" className="w-full h-full object-cover group-hover:scale-110 transition-transform" />
-              </div>
-              Book a Call
+              Get Started
+              <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
             </button>
           </motion.div>
         </div>

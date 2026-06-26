@@ -129,3 +129,68 @@
     @apply font-sans;
   }
 }
+
+/* ── Hero "Get Started" glowing border animation ─────────────────────── */
+@keyframes glow-spin {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { opacity: 0.6; }
+  50%      { opacity: 1; }
+}
+
+.hero-glow-btn {
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+  border: none;
+  isolation: isolate;
+}
+
+/* Rotating conic-gradient border that sits behind the button face */
+.hero-glow-btn::before {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  z-index: -2;
+  border-radius: inherit;
+  background: conic-gradient(
+    from 0deg,
+    #64b5f6,
+    #0466C8,
+    #55a6ff,
+    #a6d1ff,
+    #0466C8,
+    #64b5f6
+  );
+  opacity: 0;
+  animation: glow-spin 3s linear infinite;
+  transition: opacity 0.4s ease;
+}
+
+/* Solid inner fill so only the border glows */
+.hero-glow-btn::after {
+  content: '';
+  position: absolute;
+  inset: 2px;
+  z-index: -1;
+  border-radius: inherit;
+  background: #111827;
+  transition: background 0.3s ease;
+}
+
+/* Hover: reveal the spinning glow border */
+.hero-glow-btn:hover::before {
+  opacity: 1;
+  animation: glow-spin 2.5s linear infinite, glow-pulse 2s ease-in-out infinite;
+}
+
+/* Subtle outer shadow pulse on hover */
+.hero-glow-btn:hover {
+  box-shadow:
+    0 0 20px rgba(4, 102, 200, 0.35),
+    0 0 40px rgba(100, 181, 246, 0.2),
+    0 0 60px rgba(4, 102, 200, 0.1);
+}
