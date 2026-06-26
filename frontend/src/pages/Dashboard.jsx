@@ -78,7 +78,7 @@ export default function Page() {
               
               {/* Welcome banner */}
               <div className="px-4 lg:px-6 animate-in fade-in slide-in-from-bottom-4 duration-700 ease-out">
-                <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-black">
+                <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-black pb-1">
                   Welcome back{business?.name ? `, ${business.name}` : ""}
                 </h1>
                 <p className="text-sm sm:text-base font-medium text-slate-500 mt-1 max-w-2xl leading-relaxed">

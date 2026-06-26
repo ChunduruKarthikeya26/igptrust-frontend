@@ -1,13 +1,6 @@
 "use client"
 
-import {
-  Card,
-  CardAction,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
+import { Card } from "@/components/ui/card"
 import { Globe, Activity, Database, CreditCard } from "lucide-react"
 
 export function SectionCards({
@@ -17,78 +10,57 @@ export function SectionCards({
   plan = "FREE"
 }) {
   return (
-    <div
-      className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 px-4 lg:px-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 px-4 lg:px-6">
       {/* Total Websites */}
-      <Card className="bg-card border border-border/50 shadow-xs hover:shadow-sm transition-all duration-200">
-        <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-          <CardDescription className="text-xs font-semibold tracking-tight text-muted-foreground uppercase">Total Websites</CardDescription>
-          <CardAction>
-            <Globe className="h-4 w-4 text-muted-foreground/70" />
-          </CardAction>
-        </CardHeader>
-        <CardContent className="flex flex-col gap-0.5 pb-2">
-          <CardTitle className="text-2xl font-bold tracking-tight text-foreground">
-            {websitesCount}
-          </CardTitle>
-          <div className="text-xs text-muted-foreground/80 mt-0.5">
-            Configured in account
-          </div>
-        </CardContent>
+      <Card className="relative bg-card border border-border/50 border-l-4 border-l-slate-400 rounded-xl p-6 shadow-xs hover:shadow-sm transition-all duration-200 flex flex-col justify-center">
+        <div className="absolute top-5 right-5 w-9 h-9 rounded-xl bg-slate-700 dark:bg-slate-800 flex items-center justify-center shrink-0">
+          <Globe className="h-4 w-4 text-slate-100" />
+        </div>
+        <div className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider mb-2">
+          Total Websites
+        </div>
+        <div className="text-3xl sm:text-4xl font-extrabold tracking-tight text-foreground">
+          {websitesCount}
+        </div>
       </Card>
 
       {/* Active Websites */}
-      <Card className="bg-card border border-border/50 shadow-xs hover:shadow-sm transition-all duration-200">
-        <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-          <CardDescription className="text-xs font-semibold tracking-tight text-muted-foreground uppercase">Active Websites</CardDescription>
-          <CardAction>
-            <Activity className="h-4 w-4 text-muted-foreground/70" />
-          </CardAction>
-        </CardHeader>
-        <CardContent className="flex flex-col gap-0.5 pb-2">
-          <CardTitle className="text-2xl font-bold tracking-tight text-foreground">
-            {activeWebsitesCount}
-          </CardTitle>
-          <div className="text-xs text-muted-foreground/80 mt-0.5">
-            Tracking consent active
-          </div>
-        </CardContent>
+      <Card className="relative bg-card border border-border/50 border-l-4 border-l-emerald-500 rounded-xl p-6 shadow-xs hover:shadow-sm transition-all duration-200 flex flex-col justify-center">
+        <div className="absolute top-5 right-5 w-9 h-9 rounded-xl bg-emerald-100 dark:bg-emerald-500/20 flex items-center justify-center shrink-0">
+          <Activity className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+        </div>
+        <div className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider mb-2">
+          Active Websites
+        </div>
+        <div className="text-3xl sm:text-4xl font-extrabold tracking-tight text-foreground">
+          {activeWebsitesCount}
+        </div>
       </Card>
 
       {/* Total Consents */}
-      <Card className="bg-card border border-border/50 shadow-xs hover:shadow-sm transition-all duration-200">
-        <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-          <CardDescription className="text-xs font-semibold tracking-tight text-muted-foreground uppercase">Total Consents</CardDescription>
-          <CardAction>
-            <Database className="h-4 w-4 text-muted-foreground/70" />
-          </CardAction>
-        </CardHeader>
-        <CardContent className="flex flex-col gap-0.5 pb-2">
-          <CardTitle className="text-2xl font-bold tracking-tight text-foreground">
-            {totalConsents.toLocaleString()}
-          </CardTitle>
-          <div className="text-xs text-muted-foreground/80 mt-0.5">
-            Recorded consent choices
-          </div>
-        </CardContent>
+      <Card className="relative bg-card border border-border/50 border-l-4 border-l-amber-400 rounded-xl p-6 shadow-xs hover:shadow-sm transition-all duration-200 flex flex-col justify-center">
+        <div className="absolute top-5 right-5 w-9 h-9 rounded-xl bg-amber-100 dark:bg-amber-500/20 flex items-center justify-center shrink-0">
+          <Database className="h-4 w-4 text-amber-500 dark:text-amber-400" />
+        </div>
+        <div className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider mb-2">
+          Total Consents
+        </div>
+        <div className="text-3xl sm:text-4xl font-extrabold tracking-tight text-foreground">
+          {totalConsents.toLocaleString()}
+        </div>
       </Card>
 
       {/* Current Plan */}
-      <Card className="bg-card border border-border/50 shadow-xs hover:shadow-sm transition-all duration-200">
-        <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-          <CardDescription className="text-xs font-semibold tracking-tight text-muted-foreground uppercase">Current Plan</CardDescription>
-          <CardAction>
-            <CreditCard className="h-4 w-4 text-muted-foreground/70" />
-          </CardAction>
-        </CardHeader>
-        <CardContent className="flex flex-col gap-0.5 pb-2">
-          <CardTitle className="text-2xl font-bold tracking-tight text-foreground">
-            {plan}
-          </CardTitle>
-          <div className="text-xs text-muted-foreground/80 mt-0.5">
-            Subscription tier level
-          </div>
-        </CardContent>
+      <Card className="relative bg-card border border-border/50 border-l-4 border-l-violet-500 rounded-xl p-6 shadow-xs hover:shadow-sm transition-all duration-200 flex flex-col justify-center">
+        <div className="absolute top-5 right-5 w-9 h-9 rounded-xl bg-violet-100 dark:bg-violet-500/20 flex items-center justify-center shrink-0">
+          <CreditCard className="h-4 w-4 text-violet-500 dark:text-violet-400" />
+        </div>
+        <div className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider mb-2">
+          Current Plan
+        </div>
+        <div className="text-3xl sm:text-4xl font-extrabold tracking-tight text-foreground capitalize">
+          {typeof plan === 'string' ? plan.toLowerCase() : plan}
+        </div>
       </Card>
     </div>
   );

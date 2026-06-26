@@ -194,15 +194,15 @@ export default function AuditLogs() {
 
         <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
           <Button onClick={() => handleExport('csv')} variant="outline" size="sm"
-            className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 font-semibold border-slate-200 text-slate-600 bg-white hover:bg-slate-50 transition-all rounded-xl h-9 shadow-2xs">
+            className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 font-semibold border-slate-200 text-slate-600 bg-white hover:bg-slate-50 transition-all rounded-full h-9 shadow-2xs">
             <Download size={13} /> CSV
           </Button>
           <Button onClick={handleVerifyChain} disabled={verifying} variant="outline" size="sm"
-              className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 font-semibold border-slate-200 text-slate-600 bg-white hover:bg-slate-50 transition-all rounded-xl h-9 shadow-2xs whitespace-nowrap">
+              className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 font-semibold border-slate-200 text-slate-600 bg-white hover:bg-slate-50 transition-all rounded-full h-9 shadow-2xs whitespace-nowrap">
             <ShieldCheck size={13} className={verifying ? "animate-pulse text-blue-500" : "text-slate-400"} /> {verifying ? 'Verifying...' : 'Verify Chain'}
           </Button>
           <Button onClick={() => handleExport('pdf')} size="sm"
-            className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 transition-all rounded-xl h-9 shadow-2xs">
+            className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 transition-all rounded-full h-9 shadow-2xs">
             <Download size={13} /> PDF
           </Button>
         </div>

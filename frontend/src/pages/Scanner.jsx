@@ -1,45 +1,42 @@
 import React, { useState, useEffect } from 'react'
 import toast from 'react-hot-toast'
-import { scanAnyUrl, getWebsites, checkShadowCookies } from '../api/websites'
-import { Globe, Shield, Search, Check, Cookie, Info, AlertTriangle, ChevronDown, ChevronUp, Loader2 } from 'lucide-react'
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '../components/ui/select'
+import { scanAnyUrl, getWebsites } from '../api/websites'
+import { Globe, Shield, Search, Check, Cookie, Info, AlertTriangle, ChevronDown, ChevronUp, Loader2, RefreshCw, Square } from 'lucide-react'
 
 // ── Scanner limitation note ───────────────────────────────────────────────────
 function ScannerLimitationNote({ cookiesFound }) {
   const [expanded, setExpanded] = useState(false)
 
   return (
-    <div className="mt-6 rounded-2xl border border-indigo-100 bg-indigo-50/20 overflow-hidden transition-all duration-300 shadow-sm">
+    <div className="mt-6 rounded-2xl border border-blue-100 bg-blue-50/50 overflow-hidden transition-all duration-300">
       <button
         onClick={() => setExpanded(v => !v)}
-        className="w-full flex items-start gap-3.5 p-5 text-left hover:bg-indigo-50/40 transition-colors focus:outline-none"
+        className="w-full flex items-start gap-3 p-4 text-left hover:bg-blue-100/50 transition-colors focus:outline-none"
       >
-        <div className="w-8 h-8 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center shrink-0 mt-0.5">
-          <Info className="text-indigo-650 w-4 h-4" />
-        </div>
+        <Info className="text-blue-500 mt-0.5 shrink-0 w-5 h-5" />
         <div className="flex-1">
-          <p className="text-sm font-extrabold text-indigo-950 m-0">About scanner accuracy</p>
-          <p className="text-xs text-indigo-850 mt-1 leading-relaxed font-medium">
+          <p className="text-sm font-bold text-blue-900 m-0">About scanner accuracy</p>
+          <p className="text-sm text-blue-700 mt-1 leading-relaxed">
             {cookiesFound} cookies detected. Some advertising cookies may not appear in automated scans — this is normal and affects all scanner tools.
           </p>
         </div>
-        <span className="text-indigo-400 shrink-0 mt-1.5 bg-white border border-indigo-100 p-1 rounded-lg">
-          {expanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+        <span className="text-blue-400 shrink-0 mt-0.5">
+          {expanded ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
         </span>
       </button>
 
       {expanded && (
-        <div className="px-5 pb-6 pt-2 border-t border-indigo-50/80 animate-in fade-in slide-in-from-top-2 duration-300">
+        <div className="px-4 pb-5 pt-2 border-t border-blue-100 animate-in fade-in slide-in-from-top-2">
           <div className="grid gap-4 mt-2">
             <div className="flex gap-3">
-              <span className="text-indigo-600 shrink-0 font-extrabold text-sm mt-0.5 bg-indigo-50 w-6 h-6 rounded-full flex items-center justify-center font-sans">1</span>
+              <span className="text-blue-400 shrink-0 font-bold mt-0.5">①</span>
               <div>
-                <p className="text-xs font-bold text-indigo-950 m-0 uppercase tracking-wider">Ad-network cookies require real user signals</p>
-                <p className="text-xs text-slate-650 mt-1 leading-relaxed font-medium">
+                <p className="text-sm font-bold text-blue-900 m-0">Ad-network cookies require real user signals</p>
+                <p className="text-sm text-blue-700 mt-1 leading-relaxed">
                   Cookies set by Google Ad Exchange, DoubleClick, and similar ad networks
-                  (e.g. <code className="bg-slate-100 px-1.5 py-0.5 rounded font-mono text-[10px] text-slate-800 border border-slate-200">__gads</code>,{' '}
-                  <code className="bg-slate-100 px-1.5 py-0.5 rounded font-mono text-[10px] text-slate-800 border border-slate-200">_eoi</code>,{' '}
-                  <code className="bg-slate-100 px-1.5 py-0.5 rounded font-mono text-[10px] text-slate-800 border border-slate-200">IDE</code>)
+                  (e.g. <code className="bg-blue-100 px-1.5 py-0.5 rounded font-mono text-xs">__gads</code>,{' '}
+                  <code className="bg-blue-100 px-1.5 py-0.5 rounded font-mono text-xs">_eoi</code>,{' '}
+                  <code className="bg-blue-100 px-1.5 py-0.5 rounded font-mono text-xs">IDE</code>)
                   are only created when a real ad auction takes place. Ad servers actively reject
                   automated browsers to prevent click fraud, so these cookies cannot be captured
                   by any automated scanner.
@@ -47,12 +44,12 @@ function ScannerLimitationNote({ cookiesFound }) {
               </div>
             </div>
             <div className="flex gap-3">
-              <span className="text-indigo-600 shrink-0 font-extrabold text-sm mt-0.5 bg-indigo-50 w-6 h-6 rounded-full flex items-center justify-center font-sans">2</span>
+              <span className="text-blue-400 shrink-0 font-bold mt-0.5">②</span>
               <div>
-                <p className="text-xs font-bold text-indigo-950 m-0 uppercase tracking-wider">Some cookies are session- or user-specific</p>
-                <p className="text-xs text-slate-650 mt-1 leading-relaxed font-medium">
+                <p className="text-sm font-bold text-blue-900 m-0">Some cookies are session- or user-specific</p>
+                <p className="text-sm text-blue-700 mt-1 leading-relaxed">
                   Certain analytics identifiers (e.g.{' '}
-                  <code className="bg-slate-100 px-1.5 py-0.5 rounded font-mono text-[10px] text-slate-800 border border-slate-200">_ga_XXXXXXX</code>)
+                  <code className="bg-blue-100 px-1.5 py-0.5 rounded font-mono text-xs">_ga_XXXXXXX</code>)
                   are tied to a returning visitor's existing browser profile and history.
                   A scanner visiting the site for the first time will receive fewer of these
                   than a user with an established session.
@@ -60,14 +57,14 @@ function ScannerLimitationNote({ cookiesFound }) {
               </div>
             </div>
             <div className="flex gap-3">
-              <span className="text-indigo-600 shrink-0 font-extrabold text-sm mt-0.5 bg-indigo-50 w-6 h-6 rounded-full flex items-center justify-center font-sans">3</span>
+              <span className="text-blue-400 shrink-0 font-bold mt-0.5">③</span>
               <div>
-                <p className="text-xs font-bold text-indigo-950 m-0 uppercase tracking-wider">What this means for compliance</p>
-                <p className="text-xs text-slate-655 mt-1 leading-relaxed font-medium">
+                <p className="text-sm font-bold text-blue-900 m-0">What this means for compliance</p>
+                <p className="text-sm text-blue-700 mt-1 leading-relaxed">
                   The cookies detected here represent what a <strong>new visitor</strong> will
                   encounter on their first page load — the legally relevant baseline for
                   GDPR / DPDPA consent. You can supplement the list manually in your website's
-                  Cookie Manager if you know ad cookies are present on your site.
+                  Cookie Manager if you know additional ad cookies are present on your site.
                 </p>
               </div>
             </div>
@@ -79,89 +76,69 @@ function ScannerLimitationNote({ cookiesFound }) {
 }
 
 // ── Shadow Cookie Detection Panel ────────────────────────────────────────────
-function ShadowCookiePanel({ websitesList, shadowCookies, shadowLoading, selectedWebsiteId, setSelectedWebsiteId, onCheck, shadowChecked }) {
+function ShadowCookiePanel({ websitesList, shadowCookies, shadowLoading, selectedWebsiteId, setSelectedWebsiteId, onCheck }) {
   return (
-    <div className="mt-8 bg-white/95 backdrop-blur-md rounded-2xl border border-amber-200 shadow-lg shadow-amber-50/40 overflow-hidden animate-in fade-in duration-300">
+    <div className="mt-8 bg-white rounded-2xl border border-amber-200 shadow-sm overflow-hidden animate-in fade-in">
       {/* Header */}
-      <div className="px-6 py-5 bg-gradient-to-r from-amber-50/50 via-amber-50/20 to-white border-b border-amber-100 flex items-center gap-4">
-        <div className="w-12 h-12 bg-amber-50 border border-amber-100 rounded-2xl flex items-center justify-center shrink-0 shadow-inner">
-          <AlertTriangle className="text-amber-600 w-5 h-5 animate-pulse" />
+      <div className="px-6 py-4 bg-amber-50/50 border-b border-amber-100 flex items-center gap-3">
+        <div className="w-10 h-10 bg-amber-100 rounded-xl flex items-center justify-center shrink-0">
+          <AlertTriangle className="text-amber-600 w-5 h-5" />
         </div>
-        <div className="flex-1 text-left">
-          <div className="flex items-center gap-2">
-            <h3 className="m-0 text-base font-extrabold text-amber-950">Shadow Cookie Audit</h3>
-            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-200 uppercase tracking-wider">
-              Security
-            </span>
-          </div>
-          <p className="m-0 mt-0.5 text-xs font-semibold text-slate-500 leading-relaxed">
-            Audit and identify unlisted cookies active on your live pages that violate compliance policies.
-          </p>
+        <div className="flex-1">
+          <p className="m-0 text-base font-bold text-amber-900">Shadow Cookie Detection</p>
+          <p className="m-0 mt-0.5 text-sm text-amber-700">Detect cookies found on your site that are NOT declared in your cookie manager</p>
         </div>
       </div>
 
       {/* Controls */}
-      <div className="p-6 flex flex-col sm:flex-row gap-4 sm:items-end border-b border-slate-50">
-        <div className="flex-1 text-left">
-          <label className="text-xs font-bold text-slate-700 block mb-2 uppercase tracking-wider">Select registered website</label>
-          <Select
+      <div className="p-6 flex flex-col sm:flex-row gap-4 sm:items-end border-b border-gray-50">
+        <div className="flex-1">
+          <label className="text-sm font-semibold text-gray-700 block mb-2">Select registered website</label>
+          <select
             value={selectedWebsiteId}
-            onValueChange={setSelectedWebsiteId}
+            onChange={e => setSelectedWebsiteId(e.target.value)}
+            className="w-full px-4 py-2.5 text-sm border border-gray-200 rounded-xl bg-gray-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 font-medium text-gray-800 transition-all duration-200 appearance-none cursor-pointer bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D%2220%22%20height%3D%2220%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M5%208l5%205%205-5%22%20stroke%3D%22%236b7280%22%20stroke-width%3D%221.5%22%20fill%3D%22none%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E')] bg-[position:right_12px_center] bg-no-repeat"
           >
-            <SelectTrigger className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 h-11 text-xs text-left focus:bg-white focus:outline-none focus:ring-4 focus:ring-amber-500/10 focus:border-amber-500 transition-all duration-200 flex items-center justify-between font-bold text-slate-850 hover:border-slate-350 shadow-sm">
-              <SelectValue placeholder="Choose a Website" />
-            </SelectTrigger>
-            <SelectContent className="bg-white border border-slate-150 rounded-xl shadow-lg p-1">
-              {websitesList.map(w => (
-                <SelectItem key={w.id} value={w.id} className="rounded-lg text-xs font-semibold py-2">
-                  {w.domain || w.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+            <option value="">Choose a Website</option>
+            {websitesList.map(w => (
+              <option key={w.id} value={w.id}>{w.domain || w.name}</option>
+            ))}
+          </select>
         </div>
         <button
           onClick={onCheck}
           disabled={shadowLoading || !selectedWebsiteId}
-          className="flex items-center justify-center gap-2 px-6 py-2.5 h-11 rounded-xl border border-transparent font-extrabold text-xs transition-all duration-305 active:scale-[0.98] disabled:opacity-40 disabled:pointer-events-none bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white shadow-md shadow-amber-500/20 hover:shadow-lg cursor-pointer"
+          className="flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl border border-transparent font-semibold text-sm transition-all duration-200 active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white shadow-sm hover:shadow"
         >
-          {shadowLoading ? (
-            <><Loader2 className="w-4 h-4 animate-spin" /> Auditing website...</>
-          ) : (
-            <><Shield className="w-4 h-4" /> Check for Shadow Cookies</>
-          )}
+          {shadowLoading ? <><Loader2 className="w-4 h-4 animate-spin" /> Scanning...</> : <><Shield className="w-4 h-4" /> Check for Shadow Cookies</>}
         </button>
       </div>
 
       {/* Results — undeclared found */}
-      {!shadowLoading && shadowChecked && shadowCookies.length > 0 && (
-        <div className="p-6 pt-5 animate-in slide-in-from-bottom-2 text-left">
-          <div className="bg-red-50/60 border border-red-100 rounded-2xl p-5 mb-5 flex items-start gap-4 shadow-inner">
-            <div className="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center shrink-0 mt-0.5">
-              <AlertTriangle className="text-red-650 w-4 h-4" />
-            </div>
+      {!shadowLoading && shadowCookies.length > 0 && (
+        <div className="p-6 pt-5 animate-in slide-in-from-bottom-2">
+          <div className="bg-red-50/80 border border-red-200 rounded-xl p-4 mb-5 flex items-start gap-3">
+            <AlertTriangle className="text-red-500 w-5 h-5 shrink-0 mt-0.5" />
             <div>
-              <p className="m-0 text-sm font-extrabold text-red-955">⚠ {shadowCookies.length} Undeclared Cookie{shadowCookies.length > 1 ? 's' : ''} Active</p>
-              <p className="m-0 mt-1.5 text-xs font-semibold text-red-800 leading-relaxed">
-                These active cookies are setting tracking tokens on visitor devices but are not declared in your Cookie Consent Manager. Add them instantly to maintain legal compliance.
-              </p>
+              <p className="m-0 text-sm font-bold text-red-900">⚠ {shadowCookies.length} undeclared cookie{shadowCookies.length > 1 ? 's' : ''} found</p>
+              <p className="m-0 mt-1 text-sm text-red-700">These cookies are being set on your site but are not listed in your cookie manager. Add them to stay compliant.</p>
             </div>
           </div>
           <div className="flex flex-col gap-3">
             {shadowCookies.map((c, i) => (
-              <div key={i} className="flex items-center justify-between p-4 bg-slate-50/50 border border-slate-100 rounded-2xl hover:bg-slate-50 hover:border-slate-200 transition-all duration-300 group shadow-sm">
+              <div key={i} className="flex items-center justify-between p-4 bg-orange-50/50 border border-orange-200 rounded-xl transition-all hover:bg-orange-50">
                 <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 bg-amber-50 border border-amber-100 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform duration-300">
-                    <Cookie className="text-amber-600 w-5 h-5" />
+                  <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center shrink-0">
+                    <Cookie className="text-orange-600 w-5 h-5" />
                   </div>
                   <div>
-                    <p className="m-0 text-sm font-extrabold text-slate-800 font-mono">{c.name}</p>
-                    <p className="m-0 mt-1 text-xs font-semibold text-slate-500">
-                      {c.provider || 'Unknown provider'} · <span className="text-indigo-650">{c.category || 'Uncategorized'}</span> · {c.expiry || '—'}
+                    <p className="m-0 text-sm font-bold text-orange-900">{c.name}</p>
+                    <p className="m-0 mt-0.5 text-xs font-medium text-orange-700">
+                      {c.provider || 'Unknown provider'} · {c.category || 'Uncategorized'} · {c.expiry || '—'}
                     </p>
                   </div>
                 </div>
-                <span className="text-[9px] font-extrabold px-3 py-1 rounded-full bg-red-50 text-red-750 border border-red-100 uppercase tracking-wider shadow-sm">
+                <span className="text-[11px] font-bold px-2.5 py-1 rounded-full bg-red-100 text-red-700 border border-red-200 uppercase tracking-wider">
                   Undeclared
                 </span>
               </div>
@@ -171,31 +148,25 @@ function ShadowCookiePanel({ websitesList, shadowCookies, shadowLoading, selecte
       )}
 
       {/* Results — all clean */}
-      {!shadowLoading && shadowChecked && shadowCookies.length === 0 && selectedWebsiteId && (
-        <div className="p-6 pt-5 animate-in slide-in-from-bottom-2 text-left">
-          <div className="bg-emerald-50/40 border border-emerald-100 rounded-2xl p-5 flex items-center gap-4 shadow-sm">
-            <div className="w-10 h-10 bg-emerald-100 border border-emerald-200 rounded-full flex items-center justify-center shrink-0">
-              <Check className="text-emerald-750 w-5 h-5" />
+      {!shadowLoading && shadowCookies.length === 0 && selectedWebsiteId && onCheck && (
+        <div className="p-6 pt-5 animate-in slide-in-from-bottom-2">
+          <div className="bg-green-50/80 border border-green-200 rounded-xl p-5 flex items-center gap-4 shadow-sm">
+            <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center shrink-0">
+              <Check className="text-green-600 w-5 h-5" />
             </div>
-            <div>
-              <p className="m-0 text-sm font-extrabold text-emerald-950">Website Compliant & Verified</p>
-              <p className="m-0 mt-0.5 text-xs font-semibold text-emerald-800">
-                All active cookies detected on your website domain match declared records. Excellent!
-              </p>
-            </div>
+            <p className="m-0 text-sm font-bold text-green-800">
+              No shadow cookies detected — all cookies are properly declared in your cookie manager.
+            </p>
           </div>
         </div>
       )}
 
       {/* Idle state */}
       {!selectedWebsiteId && !shadowLoading && (
-        <div className="p-10 text-center">
-          <div className="w-14 h-14 bg-slate-50 border border-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <Shield className="w-6 h-6 text-slate-350" />
-          </div>
-          <p className="text-sm font-extrabold text-slate-800">Select Website to Audit</p>
-          <p className="text-xs font-semibold text-slate-500 max-w-sm mx-auto mt-1 leading-relaxed">
-            Select a registered domain above to audit its compliance and identify hidden tracker risks.
+        <div className="p-8 text-center">
+          <Shield className="w-10 h-10 text-gray-300 mx-auto mb-3" />
+          <p className="text-sm font-medium text-gray-500 max-w-sm mx-auto leading-relaxed">
+            Select a website above and click the button to scan for undeclared cookies affecting your compliance.
           </p>
         </div>
       )}
@@ -226,20 +197,33 @@ const SCAN_TYPES = [
 ]
 
 const categoryColor = {
-  Analytics:  { bg: "bg-blue-50/70 border-blue-150/70", text: "text-blue-750" },
-  Necessary:  { bg: "bg-emerald-50/70 border-emerald-150/70", text: "text-emerald-750" },
-  Marketing:  { bg: "bg-rose-50/70 border-rose-150/70", text: "text-rose-750" },
-  Functional: { bg: "bg-purple-50/70 border-purple-150/70", text: "text-purple-750" },
-  Unknown:    { bg: "bg-slate-50/70 border-slate-150/70", text: "text-slate-700" },
+  Analytics:  { bg: "bg-blue-50 border-blue-200", text: "text-blue-700" },
+  Necessary:  { bg: "bg-green-50 border-green-200", text: "text-green-700" },
+  Marketing:  { bg: "bg-red-50 border-red-200", text: "text-red-700" },
+  Functional: { bg: "bg-purple-50 border-purple-200", text: "text-purple-700" },
 }
 
 export default function Scanner() {
   const [selectedType, setSelectedType] = useState("full_site")
   const [url, setUrl] = useState("")
-  const [optionValues, setOptionValues] = useState({})
+  const [optionValues, setOptionValues] = useState(() => {
+    const defaults = {}
+    SCAN_TYPES.forEach(st => {
+      defaults[st.id] = {}
+      st.options.forEach(opt => {
+        defaults[st.id][opt.id] = opt.default
+      })
+    })
+    return defaults
+  })
   const [scanning, setScanning] = useState(false)
   const [results, setResults] = useState(null)
   const [progress, setProgress] = useState(0)
+  const [scanStartTime, setScanStartTime] = useState(null)
+  const [scanTime, setScanTime] = useState(null)
+  const [lastScan, setLastScan] = useState(null)
+  const [scanAbortController, setScanAbortController] = useState(null)
+  const [settingsChanged, setSettingsChanged] = useState(false)
 
   // Shadow cookie state
   const [shadowCookies, setShadowCookies] = useState([])
@@ -251,11 +235,13 @@ export default function Scanner() {
   const scanType = SCAN_TYPES.find((s) => s.id === selectedType) || SCAN_TYPES[0]
 
   const getOption = (id, def) => (optionValues[selectedType]?.[id] ?? def)
-  const setOption = (id, val) =>
+  const setOption = (id, val) => {
     setOptionValues((prev) => ({
       ...prev,
       [selectedType]: { ...prev[selectedType], [id]: val },
     }))
+    setSettingsChanged(true)
+  }
 
   useEffect(() => {
     getWebsites()
@@ -266,11 +252,32 @@ export default function Scanner() {
       .catch(() => {})
   }, [])
 
+  const handleStopScan = () => {
+    if (scanAbortController) {
+      scanAbortController.abort()
+    }
+    setScanning(false)
+    toast('Scan stopped', { icon: '🛑' })
+  }
+
+  const handleStopAndRescan = () => {
+    setScanning(false)
+    setProgress(0)
+    setSettingsChanged(false)
+    setTimeout(() => handleScan(), 100)
+  }
+
   const handleScan = async () => {
     if (!url.trim()) return
+    const scanStart = Date.now()
+    const abortController = new AbortController()
+    setScanAbortController(abortController)
     setScanning(true)
     setResults(null)
     setProgress(0)
+    setScanTime(null)
+    setSettingsChanged(false)
+    setScanning(true)
 
     const interval = setInterval(() => {
       setProgress((p) => {
@@ -295,7 +302,7 @@ export default function Scanner() {
         url: url.trim(),
         scan_type: selectedType,
         options: serializedOpts,
-      })
+      }, { signal: abortController.signal })
       clearInterval(interval)
       setProgress(100)
 
@@ -322,12 +329,16 @@ export default function Scanner() {
       }))
 
       setTimeout(() => {
+        const elapsed = ((Date.now() - scanStart) / 1000).toFixed(1)
+        setScanTime(elapsed)
         setScanning(false)
         setResults(mapped)
+        const scanMeta = { url: url.trim(), type: selectedType, count: mapped.length, ts: Date.now() }
+        setLastScan(scanMeta)
         if (mapped.length === 0) {
           toast('No cookies found on this URL.', { icon: 'ℹ️' })
         } else {
-          toast.success(`Found ${mapped.length} cookie${mapped.length !== 1 ? 's' : ''}!`)
+          toast.success(`Found ${mapped.length} cookies in ${elapsed}s!`)
         }
       }, 400)
 
@@ -335,22 +346,52 @@ export default function Scanner() {
       clearInterval(interval)
       setScanning(false)
       setProgress(0)
-      toast.error(err?.response?.data?.detail || 'Scan failed. Please check the URL and try again.')
+      if (err.name !== 'CanceledError' && err.message !== 'canceled') {
+        toast.error(err?.response?.data?.detail || 'Scan failed. Please check the URL and try again.')
+      }
+    }
+  }
+
+  const handleRescan = () => {
+    if (lastScan) {
+      setUrl(lastScan.url)
+      handleScan()
+    }
+  }
+
+  const handleClear = () => {
+    if (window.confirm('Clear all scan results?')) {
+      setResults(null)
+      setScanTime(null)
+      setLastScan(null)
+      setUrl('')
+      setProgress(0)
+      toast.success('Results cleared')
     }
   }
 
   const handleShadowCheck = async () => {
-    if (!selectedWebsiteId) return
+    if (!selectedWebsiteId) return toast.error('Select a registered website first')
     setShadowLoading(true)
-    setShadowChecked(false)
     setShadowCookies([])
+    setShadowChecked(false)
     try {
-      const res = await checkShadowCookies(selectedWebsiteId)
-      setShadowCookies(res.data.shadow_cookies || [])
+      const token = localStorage.getItem('token')
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/scanner/shadow/${selectedWebsiteId}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      )
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.detail || 'Shadow check failed')
+      setShadowCookies(data.shadow_cookies || [])
       setShadowChecked(true)
-      toast.success('Shadow cookie detection complete!')
+      if (data.shadow_count === 0) {
+        toast.success('No shadow cookies — all clean!')
+      } else {
+        toast.error(`${data.shadow_count} undeclared cookie(s) detected!`)
+      }
     } catch (err) {
-      toast.error(err?.response?.data?.detail || 'Failed to detect shadow cookies.')
+      toast.error(err.message || 'Shadow check failed')
     } finally {
       setShadowLoading(false)
     }
@@ -359,118 +400,113 @@ export default function Scanner() {
   return (
     <div className="max-w-7xl mx-auto space-y-6 pb-12 animate-in fade-in duration-500">
       {/* Header */}
-      <div className="mb-8 text-left">
-        <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight sm:text-4xl bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 bg-clip-text text-transparent">
-          Cookie Scanner
-        </h1>
-        <p className="text-sm text-slate-500 mt-2 max-w-xl font-medium">
-          Configure, scan, and audit cookies dynamically across your website to ensure complete legal compliance.
-        </p>
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Cookie Scanner</h1>
+        <p className="text-sm text-gray-500 mt-1">Configure options to run a full scan and detect cookies across your entire website.</p>
       </div>
 
       {/* Main Panel */}
-      <div className="bg-white/80 backdrop-blur-md rounded-2xl border border-slate-200/60 shadow-xl shadow-slate-100/50 overflow-hidden animate-in fade-in slide-in-from-bottom-4">
-        <div className="bg-gradient-to-b from-slate-50/70 to-white border-b border-slate-100 p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-left">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-indigo-50 border border-indigo-100 text-indigo-600 rounded-2xl flex items-center justify-center shadow-inner transition-transform duration-300 hover:rotate-3">
-              {scanType.icon}
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h2 className="text-lg font-bold text-slate-900">{scanType.label}</h2>
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-100">
-                  Active
-                </span>
-              </div>
-              <p className="text-sm text-slate-505 mt-0.5 leading-relaxed">{scanType.description}</p>
-            </div>
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden animate-in fade-in slide-in-from-bottom-4">
+        <div className="bg-blue-50/50 border-b border-gray-100 p-6 flex items-center gap-4">
+          <div className="w-12 h-12 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center shadow-sm">
+            {scanType.icon}
+          </div>
+          <div>
+            <h2 className="text-lg font-bold text-gray-900">{scanType.label}</h2>
+            <p className="text-sm text-gray-500 mt-0.5">{scanType.description}</p>
           </div>
         </div>
 
         <div className="p-6 md:p-8 grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-8">
-          <div className="text-left">
+          {/* Left Column: Main Form */}
+          <div>
             <div className="mb-8">
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">{scanType.urlLabel}</label>
-              <div className="relative flex items-center">
-                <div className="absolute left-4 text-slate-400">
-                  <Globe className="w-5 h-5" />
-                </div>
-                <input
-                  type="url"
-                  value={url}
-                  onChange={(e) => setUrl(e.target.value)}
-                  placeholder={scanType.urlPlaceholder}
-                  className="w-full bg-slate-50/50 border border-slate-200/80 rounded-2xl pl-12 pr-4 py-3.5 text-sm focus:bg-white focus:outline-none focus:ring-4 focus:ring-indigo-550/10 focus:border-indigo-650 transition-all duration-300 shadow-inner placeholder:text-slate-400 text-slate-800 font-medium"
-                />
-              </div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">{scanType.urlLabel}</label>
+              <input
+                type="url"
+                value={url}
+                onChange={(e) => setUrl(e.target.value)}
+                placeholder={scanType.urlPlaceholder}
+                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 shadow-sm"
+              />
             </div>
 
             <div>
-              <h3 className="text-xs font-bold text-slate-700 uppercase tracking-wider mb-4">Scan Options</h3>
-              <div className="grid gap-3">
-                {scanType.options.map((opt) => {
-                  const isChecked = getOption(opt.id, opt.default)
-                  return (
-                    <div key={opt.id} className="flex items-center justify-between p-4 bg-slate-50/30 rounded-2xl border border-slate-100 hover:bg-slate-50/80 hover:border-slate-200/80 transition-all duration-300 shadow-sm group">
-                      <div className="text-sm font-semibold text-slate-700 group-hover:text-slate-900 transition-colors">{opt.label}</div>
-                      {opt.type === "toggle" ? (
-                        <label className="relative inline-flex items-center cursor-pointer">
-                          <input type="checkbox" className="sr-only peer" checked={isChecked} onChange={(e) => setOption(opt.id, e.target.checked)} />
-                          <div className="w-11 h-6 bg-slate-200/85 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all duration-300 peer-checked:bg-indigo-600 shadow-sm"></div>
-                        </label>
-                      ) : (
-                        <Select
-                          value={getOption(opt.id, opt.default)}
-                          onValueChange={(val) => setOption(opt.id, val)}
-                        >
-                          <SelectTrigger className="w-32 bg-white border border-slate-200 rounded-xl px-4 py-2.5 h-10 text-xs text-left focus:bg-white focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all duration-200 flex items-center justify-between font-bold text-slate-755 hover:border-slate-350 shadow-sm">
-                            <SelectValue placeholder="Select" />
-                          </SelectTrigger>
-                          <SelectContent className="bg-white border border-slate-150 rounded-xl shadow-lg p-1">
-                            {opt.values.map((v) => (
-                              <SelectItem key={v} value={v} className="rounded-lg text-xs font-semibold py-2">
-                                {v}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      )}
-                    </div>
-                  )
-                })}
+              <h3 className="text-sm font-bold text-gray-900 mb-4">Scan Options</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {scanType.options.map((opt) => (
+                  <div key={opt.id} className="flex items-center justify-between p-4 bg-gray-50/50 rounded-xl border border-gray-100 hover:bg-gray-50 transition-colors">
+                    <div className="text-sm font-semibold text-gray-700">{opt.label}</div>
+                    {opt.type === "toggle" ? (
+                      <label className="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" className="sr-only peer" checked={getOption(opt.id, opt.default)} onChange={(e) => setOption(opt.id, e.target.checked)} />
+                        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                      </label>
+                    ) : (
+                      <select
+                        value={getOption(opt.id, opt.default)}
+                        onChange={(e) => setOption(opt.id, e.target.value)}
+                        className="px-3 py-2 text-sm border border-gray-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-medium text-gray-700 appearance-none cursor-pointer pr-8 bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D%2220%22%20height%3D%2220%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M5%208l5%205%205-5%22%20stroke%3D%22%236b7280%22%20stroke-width%3D%221.5%22%20fill%3D%22none%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E')] bg-[position:right_8px_center] bg-no-repeat"
+                      >
+                        {opt.values.map((v) => <option key={v}>{v}</option>)}
+                      </select>
+                    )}
+                  </div>
+                ))}
               </div>
             </div>
 
-            <div className="mt-8 pt-6 border-t border-slate-100">
+            <div className="mt-8 pt-6 border-t border-gray-100">
               {scanning ? (
-                <div className="animate-in fade-in duration-300">
-                  <div className="flex items-center gap-3 mb-4 text-indigo-600 font-extrabold text-sm">
-                    <Loader2 className="w-5 h-5 animate-spin" /> Scanning website in progress…
+                <div className="animate-in fade-in">
+                  {settingsChanged && (
+                    <div className="mb-4 flex items-center justify-between gap-3 px-4 py-3 bg-amber-50 border border-amber-200 rounded-xl animate-in fade-in">
+                      <div className="flex items-center gap-2 text-amber-700 text-sm font-semibold">
+                        <AlertTriangle className="w-4 h-4" /> Settings changed — rescan to apply new options
+                      </div>
+                      <button
+                        onClick={handleStopAndRescan}
+                        className="flex items-center gap-1.5 px-4 py-2 text-sm font-bold bg-amber-500 hover:bg-amber-600 text-white rounded-xl transition-colors"
+                      >
+                        <RefreshCw className="w-3.5 h-3.5" /> Re-scan
+                      </button>
+                    </div>
+                  )}
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-3 text-blue-600 font-bold text-sm">
+                      <Loader2 className="w-5 h-5 animate-spin" /> Scanning in progress…
+                    </div>
+                    <button
+                      onClick={handleStopScan}
+                      className="flex items-center gap-2 px-4 py-2 text-sm font-bold text-red-600 bg-red-50 hover:bg-red-100 rounded-full transition-colors border border-red-200"
+                    >
+                      <Square className="w-4 h-4 fill-current" /> Stop Scan
+                    </button>
                   </div>
-                  <div className="h-2.5 bg-slate-100 rounded-full overflow-hidden shadow-inner">
-                    <div className="h-full bg-gradient-to-r from-indigo-550 via-indigo-600 to-violet-600 rounded-full transition-all duration-300 ease-out" style={{ width: `${Math.min(progress, 100)}%` }} />
+                  <div className="h-2.5 bg-gray-100 rounded-full overflow-hidden">
+                    <div className="h-full bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full transition-all duration-300 ease-out" style={{ width: `${Math.min(progress, 100)}%` }} />
                   </div>
-                  <div className="text-xs font-bold text-slate-500 mt-2 text-right">{Math.round(Math.min(progress, 100))}% complete</div>
+                  <div className="text-xs font-semibold text-gray-500 mt-2 text-right">{Math.round(Math.min(progress, 100))}% complete</div>
                 </div>
               ) : (
-                <button
-                  className="flex items-center justify-center gap-2.5 w-full sm:w-auto px-8 py-3.5 rounded-2xl bg-gradient-to-r from-indigo-600 via-indigo-700 to-violet-700 text-white font-bold text-sm shadow-lg shadow-indigo-200/50 hover:shadow-xl hover:shadow-indigo-300/60 hover:-translate-y-0.5 hover:from-indigo-700 hover:to-violet-800 transition-all duration-300 active:translate-y-0 disabled:opacity-40 disabled:pointer-events-none cursor-pointer animate-in fade-in"
-                  onClick={handleScan}
-                  disabled={!url.trim()}
-                >
-                  <Search className="w-4 h-4" /> Start {scanType.label}
-                </button>
+                <div className="flex items-center gap-3 flex-wrap">
+                  <button
+                    className="flex items-center justify-center gap-2 w-full sm:w-auto px-8 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold text-sm shadow-sm hover:shadow hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none"
+                    onClick={handleScan}
+                    disabled={!url.trim()}
+                  >
+                    <Search className="w-4 h-4" /> Start {scanType.label}
+                  </button>
+                </div>
               )}
             </div>
           </div>
 
-          {/* Right: Info card */}
-          <div className="text-left">
-            <div className="bg-gradient-to-br from-indigo-50/30 to-indigo-100/10 border border-indigo-150/40 rounded-2xl p-6 shadow-sm">
-              <div className="font-bold text-xs uppercase tracking-wider text-indigo-900 mb-4 flex items-center gap-2">
-                <Shield className="w-4 h-4 text-indigo-550" /> What this scan detects
-              </div>
-              <div className="grid gap-3.5">
+          {/* Right Column: Information Sidebar */}
+          <div>
+            <div className="bg-blue-50/50 rounded-2xl p-6 border border-blue-100">
+              <h3 className="text-sm font-bold text-blue-900 mb-4">What's included in this scan?</h3>
+              <div className="grid gap-3">
                 {[
                   "First-party cookies",
                   "Third-party cookies",
@@ -480,11 +516,8 @@ export default function Scanner() {
                   "All pages across domain",
                   "Sitemap coverage",
                 ].map((item) => (
-                  <div key={item} className="flex items-center gap-3 text-sm font-semibold text-slate-600 hover:text-slate-800 transition-colors">
-                    <div className="w-5 h-5 rounded-full bg-emerald-50 border border-emerald-100 flex items-center justify-center shrink-0">
-                      <Check className="w-3 h-3 text-emerald-650" />
-                    </div>
-                    <span>{item}</span>
+                  <div key={item} className="flex items-start gap-3 text-sm font-medium text-blue-800">
+                    <Check className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" /> {item}
                   </div>
                 ))}
               </div>
@@ -493,18 +526,41 @@ export default function Scanner() {
         </div>
       </div>
 
+      {/* Last Scan Info Bar */}
+      {lastScan && scanTime && (
+        <div className="bg-green-50/80 border border-green-200 rounded-2xl p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 animate-in fade-in slide-in-from-bottom-2">
+          <div className="text-sm text-green-800">
+            <strong>Last scan:</strong> {lastScan.url} — <strong>{lastScan.count} cookies</strong> — ⏱ {scanTime}s
+          </div>
+          <div className="flex gap-2 flex-wrap">
+            <button
+              onClick={handleRescan}
+              className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-bold rounded-full transition-all active:scale-95"
+            >
+               Rescan
+            </button>
+            <button
+              onClick={handleClear}
+              className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-bold rounded-full transition-all active:scale-95"
+            >
+               Clear
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Scan Results */}
       {results && (
-        <div className="bg-white border border-slate-200/60 shadow-xl shadow-slate-100/40 rounded-2xl overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-400">
-          <div className="p-6 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-50/20 text-left">
+        <div className="bg-white border border-gray-100 shadow-sm rounded-2xl overflow-hidden animate-in fade-in slide-in-from-bottom-4">
+          <div className="p-6 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-gray-50/30">
             <div>
               <div className="flex items-center gap-3">
-                <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-                  <Cookie className="w-5 h-5 text-indigo-550" /> Scan Results
+                <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                  <Cookie className="w-5 h-5 text-gray-500" /> Scan Results
                 </h2>
-                <span className="px-2.5 py-1 text-[10px] font-extrabold bg-emerald-50 text-emerald-700 border border-emerald-250 rounded-full uppercase tracking-wider">Completed</span>
+                <span className="px-2.5 py-1 text-[11px] font-bold bg-green-100 text-green-700 border border-green-200 rounded-full uppercase tracking-wider">Completed</span>
               </div>
-              <p className="text-sm text-slate-500 mt-1 font-semibold">Found {results.length} cookies · {scanType.label}</p>
+              <p className="text-sm text-gray-500 mt-1 font-medium">Found {results.length} cookies · {scanType.label}{scanTime !== null && scanTime !== undefined && <span className="ml-2 text-green-600 font-bold"> · ⏱ {scanTime}s</span>}</p>
             </div>
             <div className="flex gap-2 flex-wrap">
               {["Necessary", "Analytics", "Marketing", "Functional"].map((cat) => {
@@ -520,65 +576,62 @@ export default function Scanner() {
           </div>
 
           {/* 6-metric summary bar */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 border-b border-slate-100 divide-y divide-x divide-slate-100 lg:divide-y-0">
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", borderBottom: "1.5px solid #e2e8f0" }}>
             {[
-              { label: "Total",       value: results.length,                              color: "text-indigo-650", bg: "bg-indigo-50/10" },
-              { label: "First-Party", value: results.filter(r => !r.is_third_party).length, color: "text-emerald-650", bg: "bg-emerald-50/10" },
-              { label: "Third-Party", value: results.filter(r => r.is_third_party).length,  color: "text-rose-650", bg: "bg-rose-50/10" },
-              { label: "Hidden",      value: results.filter(r => r.is_hidden).length,      color: "text-violet-650", bg: "bg-violet-50/10" },
-              { label: "Session",     value: results.filter(r => r.is_session).length,     color: "text-amber-655", bg: "bg-amber-50/10" },
-              { label: "Persistent",  value: results.filter(r => !r.is_session).length,    color: "text-slate-800", bg: "bg-slate-50/10" },
+              { label: "Total",       value: results.length,                              color: "#2563eb", bg: "#eff6ff" },
+              { label: "First-Party", value: results.filter(r => !r.is_third_party).length, color: "#15803d", bg: "#f0fdf4" },
+              { label: "Third-Party", value: results.filter(r => r.is_third_party).length,  color: "#b91c1c", bg: "#fef2f2" },
+              { label: "Hidden",      value: results.filter(r => r.is_hidden).length,      color: "#7e22ce", bg: "#faf5ff" },
+              { label: "Session",     value: results.filter(r => r.is_session).length,     color: "#92400e", bg: "#fffbeb" },
+              { label: "Persistent",  value: results.filter(r => !r.is_session).length,    color: "#0f172a", bg: "#f8fafc" },
             ].map((m, i) => (
-              <div 
-                key={i} 
-                className={`p-5 text-center ${m.bg} hover:bg-white hover:shadow-inner transition-all duration-300 flex flex-col items-center justify-center group`}
-              >
-                <div className={`text-2xl font-black ${m.color} group-hover:scale-110 transition-transform duration-300`}>{m.value}</div>
-                <div className="text-[10px] font-bold text-slate-500 mt-1 uppercase tracking-wider">{m.label}</div>
+              <div key={i} style={{ padding: "14px 8px", textAlign: "center", background: m.bg, borderRight: i < 5 ? "1px solid #e2e8f0" : "none" }}>
+                <div style={{ fontSize: 22, fontWeight: 700, color: m.color }}>{m.value}</div>
+                <div style={{ fontSize: 11, fontWeight: 600, color: "#64748b", marginTop: 2 }}>{m.label}</div>
               </div>
             ))}
           </div>
 
           {results.length === 0 ? (
-            <div className="p-12 text-center text-slate-500 font-bold">No cookies detected on this URL.</div>
+            <div className="p-12 text-center text-gray-500 font-medium">No cookies detected on this URL.</div>
           ) : (
             <>
-              <div className="overflow-x-auto text-left">
+              <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="bg-slate-50/70 text-left text-[11px] font-bold text-slate-505 uppercase tracking-wider border-b border-slate-100">
-                      <th className="px-6 py-4 font-extrabold">Cookie Name</th>
-                      <th className="px-6 py-4 font-extrabold">Category</th>
-                      <th className="px-6 py-4 font-extrabold">Provider</th>
-                      <th className="px-6 py-4 font-extrabold">Duration</th>
-                      <th className="px-6 py-4 font-extrabold">Party</th>
-                      <th className="px-6 py-4 font-extrabold">Hidden</th>
-                      <th className="px-6 py-4 font-extrabold">Consent</th>
+                    <tr className="bg-gray-50 text-left text-xs font-bold text-gray-500 uppercase tracking-wider border-b border-gray-100">
+                      <th className="px-6 py-4">Cookie Name</th>
+                      <th className="px-6 py-4">Category</th>
+                      <th className="px-6 py-4">Provider</th>
+                      <th className="px-6 py-4">Duration</th>
+                      <th className="px-6 py-4">Party</th>
+                      <th className="px-6 py-4">Hidden</th>
+                      <th className="px-6 py-4">Consent</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100 bg-white/50">
+                  <tbody className="divide-y divide-gray-50">
                     {results.map((r, i) => (
-                      <tr key={i} className="hover:bg-slate-50/50 transition-colors duration-250 group">
-                        <td className="px-6 py-4 font-mono font-bold text-slate-900 text-xs tracking-tight">{r.name}</td>
+                      <tr key={i} className="hover:bg-gray-50 transition-colors group">
+                        <td className="px-6 py-4 font-mono font-bold text-gray-800">{r.name}</td>
                         <td className="px-6 py-4">
-                          <span className={`px-2.5 py-1 text-[11px] font-bold rounded-lg border ${categoryColor[r.category]?.bg || 'bg-slate-55 border-slate-200'} ${categoryColor[r.category]?.text || 'text-slate-700'}`}>
+                          <span className={`px-2.5 py-1 text-xs font-bold rounded-lg border ${categoryColor[r.category]?.bg || 'bg-gray-50 border-gray-200'} ${categoryColor[r.category]?.text || 'text-gray-700'}`}>
                             {r.category}
                           </span>
                         </td>
-                        <td className="px-6 py-4 text-slate-650 text-xs font-semibold">{r.provider}</td>
-                        <td className="px-6 py-4 text-slate-500 text-xs font-medium">{r.duration}</td>
+                        <td className="px-6 py-4 text-gray-600 font-medium">{r.provider}</td>
+                        <td className="px-6 py-4 text-gray-500">{r.duration}</td>
                         <td className="px-6 py-4">
-                          <span className={`px-2.5 py-1 text-[10px] font-bold rounded-lg border ${r.is_third_party ? 'bg-rose-50 border-rose-100 text-rose-700' : 'bg-emerald-50 border-emerald-100 text-emerald-700'}`}>
-                            {r.is_third_party ? '3rd Party' : '1st Party'}
+                          <span className={`px-2.5 py-1 text-xs font-bold rounded-lg border ${r.is_third_party ? 'bg-red-50 border-red-200 text-red-700' : 'bg-green-50 border-green-200 text-green-700'}`}>
+                            {r.is_third_party ? '3rd' : '1st'}
                           </span>
                         </td>
                         <td className="px-6 py-4">
-                          <span className={`px-2.5 py-1 text-[10px] font-bold rounded-lg border ${r.is_hidden ? 'bg-violet-50 border-violet-100 text-violet-750' : 'bg-slate-50 border-slate-100 text-slate-400'}`}>
+                          <span className={`px-2.5 py-1 text-xs font-bold rounded-lg border ${r.is_hidden ? 'bg-purple-50 border-purple-200 text-purple-700' : 'bg-gray-50 border-gray-200 text-gray-500'}`}>
                             {r.is_hidden ? 'Yes' : 'No'}
                           </span>
                         </td>
                         <td className="px-6 py-4">
-                          <span className={`px-2.5 py-1 text-[10px] font-bold rounded-lg border ${r.consent === 'Exempt' ? 'bg-emerald-50 border-emerald-100 text-emerald-700' : 'bg-amber-50 border-amber-100 text-amber-750'}`}>
+                          <span className={`px-2.5 py-1 text-xs font-bold rounded-lg border ${r.consent === 'Exempt' ? 'bg-green-50 border-green-200 text-green-700' : 'bg-amber-50 border-amber-200 text-amber-700'}`}>
                             {r.consent}
                           </span>
                         </td>
@@ -587,12 +640,13 @@ export default function Scanner() {
                   </tbody>
                 </table>
               </div>
-              <div className="p-6 bg-slate-50/10 border-t border-slate-100 text-left">
+              <div className="p-6 bg-gray-50/50 border-t border-gray-100">
                 <ScannerLimitationNote cookiesFound={results.length} />
               </div>
             </>
           )}
         </div>
+        
       )}
 
       {/* Shadow Cookie Detection — always visible below results */}
@@ -603,7 +657,6 @@ export default function Scanner() {
         selectedWebsiteId={selectedWebsiteId}
         setSelectedWebsiteId={(id) => { setSelectedWebsiteId(id); setShadowChecked(false); setShadowCookies([]) }}
         onCheck={handleShadowCheck}
-        shadowChecked={shadowChecked}
       />
     </div>
   )

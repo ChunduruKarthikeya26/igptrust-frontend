@@ -15,7 +15,7 @@ export const getWidgetSettings = (id) => api.get(`/websites/${id}/widget-setting
 export const updateWidgetSettings = (id, data) => api.put(`/websites/${id}/widget-settings`, data)
 export const getWebsiteCategories = (id) =>
   api.get(`/websites/${id}/categories`)   // ← no trailing slash
-export const scanAnyUrl = (payload) =>
-  api.post('/scanner/scan-url', payload)
+export const scanAnyUrl = (payload, config = {}) =>
+  api.post('/scanner/scan-url', payload, config)
 export const checkShadowCookies = (id) =>
   api.get(`/scanner/shadow/${id}`)

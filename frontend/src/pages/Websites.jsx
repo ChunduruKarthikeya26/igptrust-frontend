@@ -182,66 +182,58 @@ export default function Websites() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Card 1 */}
         <div 
-          className="bg-white rounded-xl p-6 border border-[#e5edf5] flex items-center justify-between"
-          style={{ boxShadow: '0px 15px 35px rgba(23,23,23,0.06), 0px 3px 6px rgba(50,50,93,0.02)' }}
+          className="relative bg-white rounded-xl p-6 border border-[#e5edf5] border-l-4 border-l-slate-400 shadow-xs hover:shadow-sm transition-all duration-200 flex flex-col justify-center text-left"
         >
-          <div>
-            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Total Websites</p>
-            <p 
-              className="text-3xl font-light text-[#061b31] mt-2"
-              style={{ fontFeatureSettings: '"tnum"' }}
-            >
-              {totalSites}
-            </p>
-            <p className="text-xs text-gray-400 mt-1">Configured platforms</p>
+          <div className="absolute top-5 right-5 w-9 h-9 rounded-xl bg-slate-700 flex items-center justify-center shrink-0">
+            <Globe className="h-4 w-4 text-slate-100" />
           </div>
-          <div className="w-12 h-12 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center text-[#533afd]">
-            <Globe size={20} />
+          <div className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2 pr-10">
+            Total Websites
+          </div>
+          <div className="text-3xl sm:text-4xl font-extrabold tracking-tight text-[#061b31] mb-1" style={{ fontFeatureSettings: '"tnum"' }}>
+            {totalSites}
+          </div>
+          <div className="text-[11px] text-gray-400">
+            Configured platforms
           </div>
         </div>
 
         {/* Card 2 */}
         <div 
-          className="bg-white rounded-xl p-6 border border-[#e5edf5] flex items-center justify-between"
-          style={{ boxShadow: '0px 15px 35px rgba(23,23,23,0.06), 0px 3px 6px rgba(50,50,93,0.02)' }}
+          className="relative bg-white rounded-xl p-6 border border-[#e5edf5] border-l-4 border-l-emerald-500 shadow-xs hover:shadow-sm transition-all duration-200 flex flex-col justify-center text-left"
         >
-          <div>
-            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Active Widgets</p>
-            <p 
-              className="text-3xl font-light text-green-600 mt-2"
-              style={{ fontFeatureSettings: '"tnum"' }}
-            >
-              {activeWidgets}
-            </p>
-            <p className="text-xs text-gray-400 mt-1">Live consent managers</p>
+          <div className="absolute top-5 right-5 w-9 h-9 rounded-xl bg-emerald-100 flex items-center justify-center shrink-0">
+            <Check className="h-4 w-4 text-emerald-600" />
           </div>
-          <div className="w-12 h-12 rounded-xl bg-green-50 border border-green-100 flex items-center justify-center text-green-600">
-            <Check size={20} />
+          <div className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2 pr-10">
+            Active Widgets
+          </div>
+          <div className="text-3xl sm:text-4xl font-extrabold tracking-tight text-emerald-600 mb-1" style={{ fontFeatureSettings: '"tnum"' }}>
+            {activeWidgets}
+          </div>
+          <div className="text-[11px] text-gray-400">
+            Live consent managers
           </div>
         </div>
 
         {/* Card 3 */}
         <div 
-          className="bg-white rounded-xl p-6 border border-[#e5edf5] flex items-center justify-between"
-          style={{ boxShadow: '0px 15px 35px rgba(23,23,23,0.06), 0px 3px 6px rgba(50,50,93,0.02)' }}
+          className="relative bg-white rounded-xl p-6 border border-[#e5edf5] border-l-4 border-l-indigo-500 shadow-xs hover:shadow-sm transition-all duration-200 flex flex-col justify-center text-left"
         >
-          <div>
-            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Integration Health</p>
-            <p 
-              className="text-3xl font-light text-[#061b31] mt-2"
-              style={{ fontFeatureSettings: '"tnum"', color: '#533afd' }}
-            >
-              {integrationHealth}%
-            </p>
-            <div className="w-24 bg-gray-100 rounded-full h-1.5 mt-2 overflow-hidden">
-              <div 
-                className="bg-indigo-500 h-1.5 rounded-full transition-all duration-500" 
-                style={{ width: `${integrationHealth}%` }}
-              />
-            </div>
+          <div className="absolute top-5 right-5 w-9 h-9 rounded-xl bg-indigo-50 flex items-center justify-center shrink-0">
+            <Code className="h-4 w-4 text-[#533afd]" />
           </div>
-          <div className="w-12 h-12 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600">
-            <Code size={20} />
+          <div className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2 pr-10">
+            Integration Health
+          </div>
+          <div className="text-3xl sm:text-4xl font-extrabold tracking-tight text-[#533afd] mb-3" style={{ fontFeatureSettings: '"tnum"' }}>
+            {integrationHealth}%
+          </div>
+          <div className="w-full max-w-[80%] bg-gray-100 rounded-full h-1.5 overflow-hidden">
+            <div 
+              className="bg-[#533afd] h-1.5 rounded-full transition-all duration-500" 
+              style={{ width: `${integrationHealth}%` }}
+            />
           </div>
         </div>
       </div>
@@ -397,7 +389,7 @@ export default function Websites() {
                         href={site.domain.startsWith('http') ? site.domain : `https://${site.domain}`} 
                         target="_blank" 
                         rel="noreferrer"
-                        className="hover:underline flex items-center gap-1 inline-flex hover:text-indigo-600 transition-colors"
+                        className="hover:underline  items-center gap-1 inline-flex hover:text-indigo-600 transition-colors"
                       >
                         {site.domain}
                         <ExternalLink size={12} className="opacity-40" />
