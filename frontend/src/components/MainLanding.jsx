@@ -40,7 +40,25 @@ import {
   Instagram,
   Facebook
 } from 'lucide-react';
-import LogoImg from '../../upload/logo1.png';
+import LogoImg from '../../upload/LOGOO.png';
+
+const GlitchBinaryBackground = ({ opacity, display }) => {
+  return (
+    <motion.div style={{ opacity, display }} className="absolute inset-0 z-0 pointer-events-none">
+      <div className="sticky top-0 w-full h-screen overflow-hidden">
+        <style>{`
+          .glitch-layer {
+            position: absolute;
+            inset: -20px;
+            background-image: url("data:image/svg+xml,%3Csvg width='400' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Cstyle%3Etext%7Bfont-family:monospace;font-size:22px;letter-spacing:10px;%7D.w%7Bfill:%23ffffff;%7D.b%7Bfill:%2364b4ff;%7D.d%7Bfill:%232a6ab0;%7D@keyframes p1 %7B 0%, 100% %7B opacity: 0.1; %7D 50% %7B opacity: 1; %7D %7D@keyframes p2 %7B 0%, 100% %7B opacity: 1; %7D 50% %7B opacity: 0.05; %7D %7D@keyframes p3 %7B 0%, 80%, 100% %7B opacity: 0.2; %7D 90% %7B opacity: 1; %7D %7D.a1 %7B animation: p1 0.4s infinite ease-in-out; %7D.a2 %7B animation: p2 0.5s infinite ease-in-out 0.1s; %7D.a3 %7B animation: p3 0.6s infinite ease-in-out 0.2s; %7D%3C/style%3E%3Ctext x='0' y='30' class='w'%3E%3Ctspan class='w a2'%3E0%3C/tspan%3E %3Ctspan class='b a1'%3E1%3C/tspan%3E 0 %3Ctspan class='d a2'%3E1%3C/tspan%3E 1 %3Ctspan class='w a3'%3E0%3C/tspan%3E %3Ctspan class='b a3'%3E1%3C/tspan%3E 0 %3Ctspan class='d a1'%3E0%3C/tspan%3E 1 1 %3Ctspan class='d'%3E1%3C/tspan%3E 0 1 0 1%3C/text%3E%3Ctext x='0' y='60' class='b'%3E1 1 %3Ctspan class='b a3'%3E0%3C/tspan%3E 0 %3Ctspan class='w a3'%3E1%3C/tspan%3E 1 %3Ctspan class='d a2'%3E0%3C/tspan%3E %3Ctspan class='d a1'%3E1%3C/tspan%3E 1 0 %3Ctspan class='b a1'%3E0%3C/tspan%3E 1 0 0 %3Ctspan class='w a2'%3E1%3C/tspan%3E 1%3C/text%3E%3Ctext x='0' y='90' class='d'%3E%3Ctspan class='d a3'%3E0%3C/tspan%3E 0 %3Ctspan class='w a2'%3E1%3C/tspan%3E 1 %3Ctspan class='w a1'%3E0%3C/tspan%3E 1 1 0 1 %3Ctspan class='b a3'%3E1%3C/tspan%3E %3Ctspan class='d a2'%3E0%3C/tspan%3E 0 1 1 0 %3Ctspan class='w a1'%3E0%3C/tspan%3E%3C/text%3E%3Ctext x='0' y='120' class='w'%3E1 %3Ctspan class='w a3'%3E0%3C/tspan%3E 1 0 1 %3Ctspan class='d a1'%3E0%3C/tspan%3E %3Ctspan class='d a3'%3E0%3C/tspan%3E 1 %3Ctspan class='b a2'%3E0%3C/tspan%3E %3Ctspan class='b a2'%3E0%3C/tspan%3E 1 1 0 1 0 %3Ctspan class='b a3'%3E1%3C/tspan%3E%3C/text%3E%3Ctext x='0' y='150' class='b'%3E%3Ctspan class='b a1'%3E0%3C/tspan%3E %3Ctspan class='w a3'%3E1%3C/tspan%3E 1 %3Ctspan class='w a2'%3E0%3C/tspan%3E 0 %3Ctspan class='d a1'%3E1%3C/tspan%3E 1 %3Ctspan class='d a3'%3E0%3C/tspan%3E 1 1 0 0 %3Ctspan class='w a2'%3E1%3C/tspan%3E 0 1 0%3C/text%3E%3Ctext x='0' y='180' class='w'%3E1 1 %3Ctspan class='w a1'%3E0%3C/tspan%3E 1 %3Ctspan class='b a2'%3E1%3C/tspan%3E %3Ctspan class='d a3'%3E0%3C/tspan%3E 0 1 %3Ctspan class='d a3'%3E0%3C/tspan%3E 1 1 %3Ctspan class='b a1'%3E0%3C/tspan%3E 0 %3Ctspan class='b a1'%3E1%3C/tspan%3E 1 0%3C/text%3E%3C/svg%3E");
+            background-size: 240px 120px;
+          }
+        `}</style>
+        <div className="glitch-layer"></div>
+      </div>
+    </motion.div>
+  );
+};
 
 const MainLanding = () => {
   // Navigation active state
@@ -56,6 +74,15 @@ const MainLanding = () => {
       setShowLogoO(true);
     }, 1500);
     return () => clearTimeout(timer);
+  }, []);
+
+  // Window resize listener for responsive animations
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 1024);
+    handleResize(); // Init
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   // Smart Navbar Scroll Logic
@@ -108,7 +135,11 @@ const MainLanding = () => {
   // Phase 2: 0.50 – 0.75 → Card 2 slides in
   // Phase 3: 0.75 – 1.00 → Card 3 slides in
 
-  const whyTitleX = useTransform(whyScrollProgress, [0, 0.15, 0.25], ["calc(50vw - max(0px, 50vw - 640px) - 18rem)", "calc(50vw - max(0px, 50vw - 640px) - 18rem)", "0px"]);
+  const whyTitleXDesktop = useTransform(whyScrollProgress, [0, 0.15, 0.25], ["calc(50vw - max(0px, 50vw - 640px) - 18rem)", "calc(50vw - max(0px, 50vw - 640px) - 18rem)", "0px"]);
+  const whyTitleYMobile = useTransform(whyScrollProgress, [0, 0.15, 0.25], ["20vh", "20vh", "0vh"]);
+  const whyTitleX = isMobile ? "0px" : whyTitleXDesktop;
+  const whyTitleY = isMobile ? whyTitleYMobile : 0;
+
   const complianceX = useTransform(whyScrollProgress, [0, 0.15, 0.25], ["8.5rem", "8.5rem", "0rem"]);
   const eyebrowX = useTransform(whyScrollProgress, [0, 0.15, 0.25], ["12.5rem", "12.5rem", "0rem"]);
   const whyBodyOpacity = useTransform(whyScrollProgress, [0, 0.15, 0.25], [0, 0, 1]);
@@ -131,6 +162,14 @@ const MainLanding = () => {
   // Card 3
   const whyCard3Y = useTransform(whyScrollProgress, [0.75, 1.0], ["100vh", "0vh"]);
   const whyCard3Opacity = useTransform(whyScrollProgress, [0.75, 1.0], [0, 1]);
+
+  // Binary background opacity fades out as cards start appearing (Phase 1 starts at 0.25)
+  const whyBinaryBgOpacity = useTransform(whyScrollProgress, [0.2, 0.25], [0.2, 0]);
+  const whyBinaryBgDisplay = useTransform(whyScrollProgress, (p) => p >= 0.25 ? "none" : "block");
+
+  // Binary background parallax
+  const bgPos1 = useTransform(whyScrollProgress, [0, 1], ["0px 0px", "0px 1000px"]);
+  const bgPos2 = useTransform(whyScrollProgress, [0, 1], ["0px 0px", "0px -800px"]);
 
   // Our Products Scroll Hooks
   const productsSectionRef = useRef(null);
@@ -178,7 +217,7 @@ const MainLanding = () => {
 
           {/* Logo */}
           <div className="flex items-center gap-2">
-            <img src={LogoImg} alt="Logo" className="h-8 w-auto object-contain" />
+            <img src={LogoImg} alt="Logo" className="h-12 w-auto object-contain" />
           </div>
 
           {/* Desktop Nav Links */}
@@ -320,10 +359,10 @@ const MainLanding = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1, ease: "easeOut" }}
-            className="text-5xl sm:text-6xl md:text-7xl font-semibold text-[#111827] tracking-tight leading-[1.1] mb-6"
+            className="text-6xl sm:text-7xl md:text-8xl font-semibold text-[#111827] tracking-tight leading-[1.1] mb-6"
           >
             Build Trust Through <br className="hidden sm:block" />
-            <span className="text-[#64b5f6]">
+            <span className="text-[#4361ee] inline-block whitespace-nowrap">
               <span>C</span>
               <span className="relative inline-flex items-center justify-center">
                 <motion.span
@@ -338,7 +377,7 @@ const MainLanding = () => {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: showLogoO ? 1 : 0 }}
                   transition={{ duration: 1.2, ease: "easeInOut" }}
-                  className="absolute h-[1.8em] w-auto object-contain translate-y-[0.05em]"
+                  className="absolute h-[0.65em] w-auto object-contain translate-y-[0.15em]"
                   style={{ pointerEvents: showLogoO ? 'auto' : 'none' }}
                 />
               </span>
@@ -350,7 +389,7 @@ const MainLanding = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
-            className="text-lg text-slate-600 leading-relaxed max-w-2xl mb-10"
+            className="text-lg text-slate-900 leading-relaxed max-w-2xl mb-10 font-medium"
           >
             Great organizations deserve a system that does it all, from managing consent and smooth
             DSR workflows to helping you market and track compliance.
@@ -378,34 +417,23 @@ const MainLanding = () => {
       <section
         id="why-igp"
         ref={whySectionRef}
-        className="relative bg-[#0466C8] text-white min-h-[400vh]"
+        className="relative bg-[#011638] text-white min-h-[400vh]"
       >
-        {/* Beautiful Subtle Grid Pattern with Dots */}
-        <div
-          className="absolute inset-0 pointer-events-none opacity-80"
-          style={{
-            backgroundImage: `
-              radial-gradient(circle at 1px 1px, rgba(255,255,255,0.2) 1.5px, transparent 0),
-              linear-gradient(to right, rgba(255,255,255,0.04) 1px, transparent 1px),
-              linear-gradient(to bottom, rgba(255,255,255,0.04) 1px, transparent 1px)
-            `,
-            backgroundSize: '40px 40px'
-          }}
-        />
+        <GlitchBinaryBackground opacity={whyBinaryBgOpacity} display={whyBinaryBgDisplay} />
         <div className="sticky top-0 h-screen flex items-center max-w-7xl mx-auto px-6 w-full overflow-hidden">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center w-full">
 
             {/* Left Column - Sticky Content */}
             <motion.div
-              style={{ x: whyTitleX }}
+              style={{ x: whyTitleX, y: whyTitleY }}
               className="lg:col-span-7 flex flex-col items-center lg:items-start text-center lg:text-left z-10"
             >
-              <motion.span style={{ x: eyebrowX }} className="block self-start text-[#FFFFFF]/70 text-xs font-extrabold tracking-wider mb-4 border-b border-white/20 pb-1 w-fit">
+              <motion.span style={{ x: isMobile ? 0 : eyebrowX }} className="block self-center lg:self-start text-[#FFFFFF]/70 text-xs sm:text-sm font-extrabold tracking-wider mb-4 border-b border-white/20 pb-1 w-fit">
                 Why IGP Trust?
               </motion.span>
-              <h2 className="text-4xl sm:text-[42px] lg:text-[46px] xl:text-5xl font-semibold text-white tracking-tight leading-tight mb-6 inline-flex flex-col items-center lg:items-start">
+              <h2 className="text-[32px] leading-[1.2] sm:text-[42px] lg:text-[46px] xl:text-5xl font-semibold text-white tracking-tight mb-6 inline-flex flex-col items-center lg:items-start">
                 <span className="block">Engineered for Enterprise</span>
-                <motion.span style={{ x: complianceX }} className="block self-start mt-1">
+                <motion.span style={{ x: isMobile ? 0 : complianceX }} className="block self-center lg:self-start mt-1">
                   <span>C</span>
                   <span className="relative inline-flex items-center justify-center">
                     <motion.span
@@ -420,7 +448,7 @@ const MainLanding = () => {
                       initial={{ opacity: 0 }}
                       animate={{ opacity: showLogoO ? 1 : 0 }}
                       transition={{ duration: 1.2, ease: "easeInOut" }}
-                      className="absolute h-[0.7em] w-auto object-contain translate-y-[0.05em]"
+                      className="absolute h-[0.5em] w-auto object-contain translate-y-[0.15em]"
                       style={{ pointerEvents: showLogoO ? 'auto' : 'none' }}
                     />
                   </span>
@@ -428,14 +456,14 @@ const MainLanding = () => {
                 </motion.span>
               </h2>
               <motion.div style={{ opacity: whyBodyOpacity, y: whyBodyY }}>
-                <p className="text-lg text-white/80 leading-relaxed mb-8 max-w-md">
+                <p className="text-lg text-white/80 leading-relaxed mb-8 max-w-md font-medium">
                   Managing privacy doesn't have to mean managing chaos. We automate the operational complexity of data governance and compliance, so you can build customer trust.
                 </p>
               </motion.div>
             </motion.div>
 
             {/* Right Column - Scroll-Driven changing cards */}
-            <div className="lg:col-span-5 relative w-full h-[400px] flex items-center justify-center">
+            <div className="lg:col-span-5 relative w-full h-[320px] lg:h-[400px] mt-6 lg:mt-0 flex items-center justify-center">
 
               {/* Card 1 */}
               <motion.div
@@ -445,7 +473,7 @@ const MainLanding = () => {
                   marginTop: whyCard1Top,
                   opacity: whyCard1Opacity,
                 }}
-                className="absolute inset-0 bg-white text-[#111827] p-8 rounded-2xl shadow-2xl border border-blue-50/10 flex flex-col gap-4 w-full h-fit origin-top overflow-hidden"
+                className="absolute inset-0 bg-white text-[#111827] p-5 lg:p-8 rounded-2xl shadow-2xl border border-blue-50/10 flex flex-col gap-3 lg:gap-4 w-full h-fit origin-top overflow-hidden"
               >
                 {/* Solid white cover — hides text when card goes to back */}
                 <motion.div
@@ -453,12 +481,12 @@ const MainLanding = () => {
                   className="absolute inset-0 bg-white rounded-2xl z-10 pointer-events-none"
                 />
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center shadow-sm">
-                    <Shield className="w-6 h-6 text-[#0466C8]" />
+                  <div className="w-10 h-10 lg:w-12 lg:h-12 rounded-xl bg-blue-50 flex items-center justify-center shadow-sm">
+                    <Shield className="w-5 h-5 lg:w-6 lg:h-6 text-[#0466C8]" />
                   </div>
-                  <h3 className="text-xl font-bold text-[#111827]">Built by Security & Compliance Experts</h3>
+                  <h3 className="text-lg lg:text-xl font-bold text-[#111827]">Built by Security & Compliance Experts</h3>
                 </div>
-                <p className="text-sm text-[#6B7280] leading-relaxed">
+                <p className="text-xs lg:text-sm text-[#6B7280] leading-relaxed font-medium">
                   Combining deep expertise in privacy, cybersecurity, and risk management to help organizations navigate an increasingly complex regulatory landscape.
                 </p>
                 <div className="h-px bg-slate-100 my-2" />
@@ -480,7 +508,7 @@ const MainLanding = () => {
                   marginTop: whyCard2Top,
                   opacity: whyCard2Opacity,
                 }}
-                className="absolute inset-0 bg-white text-[#111827] p-8 rounded-2xl shadow-2xl border border-blue-50/10 flex flex-col gap-4 w-full h-fit origin-top overflow-hidden"
+                className="absolute inset-0 bg-white text-[#111827] p-5 lg:p-8 rounded-2xl shadow-2xl border border-blue-50/10 flex flex-col gap-3 lg:gap-4 w-full h-fit origin-top overflow-hidden"
               >
                 {/* Solid white cover — hides text when card goes to back */}
                 <motion.div
@@ -488,12 +516,12 @@ const MainLanding = () => {
                   className="absolute inset-0 bg-white rounded-2xl z-10 pointer-events-none"
                 />
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center shadow-sm">
-                    <Zap className="w-6 h-6 text-[#0466C8]" />
+                  <div className="w-10 h-10 lg:w-12 lg:h-12 rounded-xl bg-blue-50 flex items-center justify-center shadow-sm">
+                    <Zap className="w-5 h-5 lg:w-6 lg:h-6 text-[#0466C8]" />
                   </div>
-                  <h3 className="text-xl font-bold text-[#111827]">Designed for Today's Digital Enterprises</h3>
+                  <h3 className="text-lg lg:text-xl font-bold text-[#111827]">Designed for Today's Digital Enterprises</h3>
                 </div>
-                <p className="text-sm text-[#6B7280] leading-relaxed">
+                <p className="text-xs lg:text-sm text-[#6B7280] leading-relaxed font-medium">
                   Unlike legacy solutions, iGP Trust is built with modern workflows, automation, and user experience at its core, making trust management simpler and more efficient.
                 </p>
                 <div className="h-px bg-slate-100 my-2" />
@@ -513,15 +541,15 @@ const MainLanding = () => {
                   y: whyCard3Y,
                   opacity: whyCard3Opacity,
                 }}
-                className="absolute inset-0 bg-white text-[#111827] p-8 rounded-2xl shadow-2xl border border-blue-50/10 flex flex-col gap-4 w-full h-fit origin-top"
+                className="absolute inset-0 bg-white text-[#111827] p-5 lg:p-8 rounded-2xl shadow-2xl border border-blue-50/10 flex flex-col gap-3 lg:gap-4 w-full h-fit origin-top"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center shadow-sm">
-                    <Workflow className="w-6 h-6 text-[#0466C8]" />
+                  <div className="w-10 h-10 lg:w-12 lg:h-12 rounded-xl bg-blue-50 flex items-center justify-center shadow-sm">
+                    <Workflow className="w-5 h-5 lg:w-6 lg:h-6 text-[#0466C8]" />
                   </div>
-                  <h3 className="text-xl font-bold text-[#111827]">Privacy, Security & Risk — Unified</h3>
+                  <h3 className="text-lg lg:text-xl font-bold text-[#111827]">Privacy, Security & Risk — Unified</h3>
                 </div>
-                <p className="text-sm text-[#6B7280] leading-relaxed">
+                <p className="text-xs lg:text-sm text-[#6B7280] leading-relaxed font-medium">
                   Manage consent, cybersecurity assessments, and third-party risk from a connected ecosystem designed to reduce complexity and improve governance.
                 </p>
                 <div className="h-px bg-slate-100 my-2" />
@@ -560,7 +588,7 @@ const MainLanding = () => {
             <h2 className="text-4xl sm:text-5xl font-semibold text-[#111827] tracking-tight mt-2">
               Our Products
             </h2>
-            <p className="text-base text-[#6B7280] mt-3 text-center max-w-md px-6">
+            <p className="text-base text-[#6B7280] mt-3 text-center max-w-md px-6 font-medium">
               Explore our core platform modules built to address distinct compliance challenges.
             </p>
           </motion.div>
@@ -571,42 +599,42 @@ const MainLanding = () => {
             {/* Card 1: CMP */}
             <motion.div
               style={{ y: productY0 }}
-              className="absolute inset-0 w-full h-full bg-[#3e92cc] flex flex-col justify-center items-center z-10 p-12"
+              className="absolute inset-0 w-full h-full bg-[#3e92cc] flex flex-col justify-center items-center z-10 p-6 md:p-8 lg:p-12"
             >
-              <div className="w-full h-full flex flex-col gap-8 justify-center">
+              <div className="w-full h-full flex flex-col gap-6 lg:gap-8 justify-center">
 
                 {/* Top section: left placeholder card + right heading */}
-                <div className="flex flex-col lg:flex-row gap-8 items-stretch flex-1 min-h-0">
+                <div className="flex flex-col lg:flex-row gap-4 lg:gap-8 items-stretch flex-1 min-h-0">
 
-                  {/* Left: Image / visual placeholder card — larger, fills height */}
-                  <div className="lg:w-[65%] h-full min-h-[240px] bg-white/10 border border-white/20 rounded-none flex items-center justify-center backdrop-blur-sm">
+                  {/* Left: Image / visual placeholder card */}
+                  <div className="order-2 lg:order-1 flex w-full lg:w-[65%] h-32 sm:flex-1 sm:h-auto lg:flex-none lg:h-full min-h-[128px] lg:min-h-[240px] bg-white/10 border border-white/20 rounded-2xl lg:rounded-none items-center justify-center backdrop-blur-sm shrink-0 lg:shrink">
                     <div className="flex flex-col items-center gap-4 text-white/40">
-                      <Globe className="w-28 h-28 text-white/30" />
+                      <Globe className="w-16 h-16 sm:w-28 sm:h-28 lg:w-28 lg:h-28 text-white/30" />
                     </div>
                   </div>
 
                   {/* Right: Heading + description — vertically centered */}
-                  <div className="lg:w-[45%] flex flex-col justify-start gap-5">
-                    <h3 className="text-2xl md:text-3xl font-semibold text-white leading-tight tracking-tight">
-                      Consent Management Platform<br />Built for Modern Enterprises
+                  <div className="order-1 lg:order-2 lg:w-[45%] flex flex-col justify-center lg:justify-start gap-2 lg:gap-5">
+                    <h3 className="text-2xl md:text-3xl font-semibold text-white leading-tight tracking-tight text-center lg:text-left">
+                      Consent Management Platform<br className="hidden lg:block" />Built for Modern Enterprises
                     </h3>
-                    <p className="text-sm text-blue-100 leading-relaxed max-w-sm">
+                    <p className="hidden lg:block text-sm text-blue-100 leading-relaxed max-w-sm font-medium">
                       Automate consent collection, preference management, audit logging, and user rights requests across every touchpoint.
                     </p>
                   </div>
                 </div>
 
                 {/* Bottom section: 4 feature columns */}
-                <div className="grid grid-cols-2 lg:grid-cols-4 border-t border-white/20 pt-6 gap-0">
+                <div className="grid grid-cols-2 lg:grid-cols-4 border-t border-white/20 pt-4 lg:pt-6 gap-0">
 
                   {/* Feature 1: Consent Collection */}
-                  <div className="group flex flex-col gap-4 p-5 min-h-[180px] rounded-xl border border-transparent transition-all duration-300 hover:-translate-y-1 hover:border-white/20 hover:shadow-lg hover:shadow-black/10 hover:bg-white/10 cursor-pointer">
-                    <div className="w-8 h-8 rounded-md bg-white/20 flex items-center justify-center text-white text-sm font-black transition-transform duration-300 group-hover:scale-110 shrink-0">1</div>
+                  <div className="group flex flex-col gap-2 lg:gap-4 p-3 lg:p-5 min-h-[120px] lg:min-h-[180px] rounded-xl border border-transparent transition-all duration-300 hover:-translate-y-1 hover:border-white/20 hover:shadow-lg hover:shadow-black/10 hover:bg-white/10 cursor-pointer">
+                    <div className="w-6 h-6 lg:w-8 lg:h-8 rounded-md bg-white/20 flex items-center justify-center text-white text-xs lg:text-sm font-black transition-transform duration-300 group-hover:scale-110 shrink-0">1</div>
                     <div className="overflow-hidden">
-                      <h4 className="font-bold text-white text-sm leading-snug mb-2">Consent Collection</h4>
+                      <h4 className="font-bold text-white text-xs lg:text-sm leading-snug mb-1 lg:mb-2">Consent Collection</h4>
                       <div className="h-0.5 bg-white w-8 transition-all duration-500 ease-out group-hover:w-full" />
                     </div>
-                    <p className="text-xs text-blue-100 leading-relaxed flex-1">
+                    <p className="text-[10px] lg:text-xs text-blue-100 leading-relaxed flex-1 hidden sm:block font-medium">
                       Collect consents across web, mobile, and offline channels with ease.
                     </p>
                     <button
@@ -618,13 +646,13 @@ const MainLanding = () => {
                   </div>
 
                   {/* Feature 2: Preference Management */}
-                  <div className="group flex flex-col gap-4 p-5 min-h-[180px] rounded-xl border border-transparent transition-all duration-300 hover:-translate-y-1 hover:border-white/20 hover:shadow-lg hover:shadow-black/10 hover:bg-white/10 cursor-pointer">
-                    <div className="w-8 h-8 rounded-md bg-white/20 flex items-center justify-center text-white text-sm font-black transition-transform duration-300 group-hover:scale-110 shrink-0">2</div>
+                  <div className="group flex flex-col gap-2 lg:gap-4 p-3 lg:p-5 min-h-[120px] lg:min-h-[180px] rounded-xl border border-transparent transition-all duration-300 hover:-translate-y-1 hover:border-white/20 hover:shadow-lg hover:shadow-black/10 hover:bg-white/10 cursor-pointer">
+                    <div className="w-6 h-6 lg:w-8 lg:h-8 rounded-md bg-white/20 flex items-center justify-center text-white text-xs lg:text-sm font-black transition-transform duration-300 group-hover:scale-110 shrink-0">2</div>
                     <div className="overflow-hidden">
-                      <h4 className="font-bold text-white text-sm leading-snug mb-2">Preference Management</h4>
+                      <h4 className="font-bold text-white text-xs lg:text-sm leading-snug mb-1 lg:mb-2">Preference Management</h4>
                       <div className="h-0.5 bg-white w-8 transition-all duration-500 ease-out group-hover:w-full" />
                     </div>
-                    <p className="text-xs text-blue-100 leading-relaxed flex-1">
+                    <p className="text-[10px] lg:text-xs text-blue-100 leading-relaxed flex-1 hidden sm:block font-medium">
                       Empower users to manage their privacy preferences.
                     </p>
                     <button
@@ -636,13 +664,13 @@ const MainLanding = () => {
                   </div>
 
                   {/* Feature 3: Audit & Compliance */}
-                  <div className="group flex flex-col gap-4 p-5 min-h-[180px] rounded-xl border border-transparent transition-all duration-300 hover:-translate-y-1 hover:border-white/20 hover:shadow-lg hover:shadow-black/10 hover:bg-white/10 cursor-pointer">
-                    <div className="w-8 h-8 rounded-md bg-white/20 flex items-center justify-center text-white text-sm font-black transition-transform duration-300 group-hover:scale-110 shrink-0">3</div>
+                  <div className="group flex flex-col gap-2 lg:gap-4 p-3 lg:p-5 min-h-[120px] lg:min-h-[180px] rounded-xl border border-transparent transition-all duration-300 hover:-translate-y-1 hover:border-white/20 hover:shadow-lg hover:shadow-black/10 hover:bg-white/10 cursor-pointer">
+                    <div className="w-6 h-6 lg:w-8 lg:h-8 rounded-md bg-white/20 flex items-center justify-center text-white text-xs lg:text-sm font-black transition-transform duration-300 group-hover:scale-110 shrink-0">3</div>
                     <div className="overflow-hidden">
-                      <h4 className="font-bold text-white text-sm leading-snug mb-2">Audit & Compliance</h4>
+                      <h4 className="font-bold text-white text-xs lg:text-sm leading-snug mb-1 lg:mb-2">Audit & Compliance</h4>
                       <div className="h-0.5 bg-white w-8 transition-all duration-500 ease-out group-hover:w-full" />
                     </div>
-                    <p className="text-xs text-blue-100 leading-relaxed flex-1">
+                    <p className="text-[10px] lg:text-xs text-blue-100 leading-relaxed flex-1 hidden sm:block font-medium">
                       Maintain immutable audit logs and ensure regulatory compliance.
                     </p>
                     <button
@@ -654,13 +682,13 @@ const MainLanding = () => {
                   </div>
 
                   {/* Feature 4: User Rights (DSAR) */}
-                  <div className="group flex flex-col gap-4 p-5 min-h-[180px] rounded-xl border border-transparent transition-all duration-300 hover:-translate-y-1 hover:border-white/20 hover:shadow-lg hover:shadow-black/10 hover:bg-white/10 cursor-pointer">
-                    <div className="w-8 h-8 rounded-md bg-white/20 flex items-center justify-center text-white text-sm font-black transition-transform duration-300 group-hover:scale-110 shrink-0">4</div>
+                  <div className="group flex flex-col gap-2 lg:gap-4 p-3 lg:p-5 min-h-[120px] lg:min-h-[180px] rounded-xl border border-transparent transition-all duration-300 hover:-translate-y-1 hover:border-white/20 hover:shadow-lg hover:shadow-black/10 hover:bg-white/10 cursor-pointer">
+                    <div className="w-6 h-6 lg:w-8 lg:h-8 rounded-md bg-white/20 flex items-center justify-center text-white text-xs lg:text-sm font-black transition-transform duration-300 group-hover:scale-110 shrink-0">4</div>
                     <div className="overflow-hidden">
-                      <h4 className="font-bold text-white text-sm leading-snug mb-2">User Rights (DSAR)</h4>
+                      <h4 className="font-bold text-white text-xs lg:text-sm leading-snug mb-1 lg:mb-2">User Rights (DSAR)</h4>
                       <div className="h-0.5 bg-white w-8 transition-all duration-500 ease-out group-hover:w-full" />
                     </div>
-                    <p className="text-xs text-blue-100 leading-relaxed flex-1">
+                    <p className="text-[10px] lg:text-xs text-blue-100 leading-relaxed flex-1 hidden sm:block font-medium">
                       Streamline DSAR workflows and respond to user requests faster.
                     </p>
                     <button
@@ -678,41 +706,41 @@ const MainLanding = () => {
             {/* Card 2: Data Mapping — White theme */}
             <motion.div
               style={{ y: productY1 }}
-              className="absolute inset-0 w-full h-full bg-white flex flex-col justify-center items-center z-20 p-12"
+              className="absolute inset-0 w-full h-full bg-white flex flex-col justify-center items-center z-20 p-6 md:p-8 lg:p-12"
             >
-              <div className="w-full h-full flex flex-col gap-8 justify-center">
+              <div className="w-full h-full flex flex-col gap-6 lg:gap-8 justify-center">
 
                 {/* Top section */}
-                <div className="flex flex-col lg:flex-row gap-8 items-stretch flex-1 min-h-0">
+                <div className="flex flex-col lg:flex-row gap-4 lg:gap-8 items-stretch flex-1 min-h-0">
 
                   {/* Left: Image placeholder */}
-                  <div className="lg:w-[65%] h-full min-h-[280px] bg-[#EAF4FF] border border-[#0466C8]/10 rounded-none flex items-center justify-center">
+                  <div className="order-2 lg:order-1 flex w-full lg:w-[65%] h-32 sm:flex-1 sm:h-auto lg:flex-none lg:h-full min-h-[128px] lg:min-h-[240px] bg-[#EAF4FF] border border-[#0466C8]/10 rounded-2xl lg:rounded-none items-center justify-center shrink-0 lg:shrink">
                     <div className="flex flex-col items-center gap-4">
-                      <Database className="w-28 h-28 text-[#0466C8]/20" />
+                      <Database className="w-16 h-16 sm:w-28 sm:h-28 lg:w-28 lg:h-28 text-[#0466C8]/20" />
                     </div>
                   </div>
 
                   {/* Right: Heading + description */}
-                  <div className="lg:w-[45%] flex flex-col justify-start gap-5">
-                    <h3 className="text-2xl md:text-3xl font-semibold text-[#111827] leading-tight tracking-tight">
-                      Data Mapping & Discovery<br />Platform
+                  <div className="order-1 lg:order-2 lg:w-[45%] flex flex-col justify-center lg:justify-start gap-2 lg:gap-5">
+                    <h3 className="text-2xl md:text-3xl font-semibold text-[#111827] leading-tight tracking-tight text-center lg:text-left">
+                      Data Mapping & Discovery<br className="hidden lg:block" />Platform
                     </h3>
-                    <p className="text-sm text-[#6B7280] leading-relaxed max-w-sm">
+                    <p className="hidden lg:block text-sm text-[#6B7280] leading-relaxed max-w-sm font-medium">
                       Automatically discover and categorize personal data across databases and cloud systems. Real-time sync, cross-database scanning, and custom data classification.
                     </p>
                   </div>
                 </div>
 
                 {/* Bottom: 4 feature columns */}
-                <div className="grid grid-cols-2 lg:grid-cols-4 border-t border-[#E5E7EB] pt-6 gap-0">
+                <div className="grid grid-cols-2 lg:grid-cols-4 border-t border-[#E5E7EB] pt-4 lg:pt-6 gap-0">
 
-                  <div className="group flex flex-col gap-4 p-5 min-h-[180px] rounded-xl border border-transparent transition-all duration-300 hover:-translate-y-1 hover:border-[#E5E7EB] hover:shadow-lg hover:shadow-[#0466C8]/8 hover:bg-[#EAF4FF] cursor-pointer">
-                    <div className="w-8 h-8 rounded-md bg-[#0466C8] flex items-center justify-center text-white text-sm font-black transition-transform duration-300 group-hover:scale-110 shrink-0">1</div>
+                  <div className="group flex flex-col gap-2 lg:gap-4 p-3 lg:p-5 min-h-[120px] lg:min-h-[180px] rounded-xl border border-transparent transition-all duration-300 hover:-translate-y-1 hover:border-[#E5E7EB] hover:shadow-lg hover:shadow-[#0466C8]/8 hover:bg-[#EAF4FF] cursor-pointer">
+                    <div className="w-6 h-6 lg:w-8 lg:h-8 rounded-md bg-[#0466C8] flex items-center justify-center text-white text-xs lg:text-sm font-black transition-transform duration-300 group-hover:scale-110 shrink-0">1</div>
                     <div className="overflow-hidden">
-                      <h4 className="font-bold text-[#0466C8] text-sm leading-snug mb-2">Automated Discovery</h4>
+                      <h4 className="font-bold text-[#0466C8] text-xs lg:text-sm leading-snug mb-1 lg:mb-2">Automated Discovery</h4>
                       <div className="h-0.5 bg-[#0466C8] w-8 transition-all duration-500 ease-out group-hover:w-full" />
                     </div>
-                    <p className="text-xs text-[#6B7280] leading-relaxed flex-1">
+                    <p className="text-[10px] lg:text-xs text-[#6B7280] leading-relaxed flex-1 hidden sm:block font-medium">
                       Scan databases and cloud buckets to uncover uncatalogued personal data stores.
                     </p>
                     <button onClick={() => setIsDemoModalOpen(true)} className="flex items-center gap-1.5 text-xs font-bold text-[#0466C8] transition-all duration-200 group-hover:gap-2.5 mt-auto">
@@ -720,13 +748,13 @@ const MainLanding = () => {
                     </button>
                   </div>
 
-                  <div className="group flex flex-col gap-4 p-5 min-h-[180px] rounded-xl border border-transparent transition-all duration-300 hover:-translate-y-1 hover:border-[#E5E7EB] hover:shadow-lg hover:shadow-[#0466C8]/8 hover:bg-[#EAF4FF] cursor-pointer">
-                    <div className="w-8 h-8 rounded-md bg-[#0466C8] flex items-center justify-center text-white text-sm font-black transition-transform duration-300 group-hover:scale-110 shrink-0">2</div>
+                  <div className="group flex flex-col gap-2 lg:gap-4 p-3 lg:p-5 min-h-[120px] lg:min-h-[180px] rounded-xl border border-transparent transition-all duration-300 hover:-translate-y-1 hover:border-[#E5E7EB] hover:shadow-lg hover:shadow-[#0466C8]/8 hover:bg-[#EAF4FF] cursor-pointer">
+                    <div className="w-6 h-6 lg:w-8 lg:h-8 rounded-md bg-[#0466C8] flex items-center justify-center text-white text-xs lg:text-sm font-black transition-transform duration-300 group-hover:scale-110 shrink-0">2</div>
                     <div className="overflow-hidden">
-                      <h4 className="font-bold text-[#0466C8] text-sm leading-snug mb-2">Real-Time Sync</h4>
+                      <h4 className="font-bold text-[#0466C8] text-xs lg:text-sm leading-snug mb-1 lg:mb-2">Real-Time Sync</h4>
                       <div className="h-0.5 bg-[#0466C8] w-8 transition-all duration-500 ease-out group-hover:w-full" />
                     </div>
-                    <p className="text-xs text-[#6B7280] leading-relaxed flex-1">
+                    <p className="text-[10px] lg:text-xs text-[#6B7280] leading-relaxed flex-1 hidden sm:block font-medium">
                       Keep data inventories up to date with continuous cross-database synchronization.
                     </p>
                     <button onClick={() => setIsDemoModalOpen(true)} className="flex items-center gap-1.5 text-xs font-bold text-[#0466C8] transition-all duration-200 group-hover:gap-2.5 mt-auto">
@@ -734,13 +762,13 @@ const MainLanding = () => {
                     </button>
                   </div>
 
-                  <div className="group flex flex-col gap-4 p-5 min-h-[180px] rounded-xl border border-transparent transition-all duration-300 hover:-translate-y-1 hover:border-[#E5E7EB] hover:shadow-lg hover:shadow-[#0466C8]/8 hover:bg-[#EAF4FF] cursor-pointer">
-                    <div className="w-8 h-8 rounded-md bg-[#0466C8] flex items-center justify-center text-white text-sm font-black transition-transform duration-300 group-hover:scale-110 shrink-0">3</div>
+                  <div className="group flex flex-col gap-2 lg:gap-4 p-3 lg:p-5 min-h-[120px] lg:min-h-[180px] rounded-xl border border-transparent transition-all duration-300 hover:-translate-y-1 hover:border-[#E5E7EB] hover:shadow-lg hover:shadow-[#0466C8]/8 hover:bg-[#EAF4FF] cursor-pointer">
+                    <div className="w-6 h-6 lg:w-8 lg:h-8 rounded-md bg-[#0466C8] flex items-center justify-center text-white text-xs lg:text-sm font-black transition-transform duration-300 group-hover:scale-110 shrink-0">3</div>
                     <div className="overflow-hidden">
-                      <h4 className="font-bold text-[#0466C8] text-sm leading-snug mb-2">Data Classification</h4>
+                      <h4 className="font-bold text-[#0466C8] text-xs lg:text-sm leading-snug mb-1 lg:mb-2">Data Classification</h4>
                       <div className="h-0.5 bg-[#0466C8] w-8 transition-all duration-500 ease-out group-hover:w-full" />
                     </div>
-                    <p className="text-xs text-[#6B7280] leading-relaxed flex-1">
+                    <p className="text-[10px] lg:text-xs text-[#6B7280] leading-relaxed flex-1 hidden sm:block font-medium">
                       Automatically tag and classify sensitive PII fields across all connected sources.
                     </p>
                     <button onClick={() => setIsDemoModalOpen(true)} className="flex items-center gap-1.5 text-xs font-bold text-[#0466C8] transition-all duration-200 group-hover:gap-2.5 mt-auto">
@@ -748,13 +776,13 @@ const MainLanding = () => {
                     </button>
                   </div>
 
-                  <div className="group flex flex-col gap-4 p-5 min-h-[180px] rounded-xl border border-transparent transition-all duration-300 hover:-translate-y-1 hover:border-[#E5E7EB] hover:shadow-lg hover:shadow-[#0466C8]/8 hover:bg-[#EAF4FF] cursor-pointer">
-                    <div className="w-8 h-8 rounded-md bg-[#0466C8] flex items-center justify-center text-white text-sm font-black transition-transform duration-300 group-hover:scale-110 shrink-0">4</div>
+                  <div className="group flex flex-col gap-2 lg:gap-4 p-3 lg:p-5 min-h-[120px] lg:min-h-[180px] rounded-xl border border-transparent transition-all duration-300 hover:-translate-y-1 hover:border-[#E5E7EB] hover:shadow-lg hover:shadow-[#0466C8]/8 hover:bg-[#EAF4FF] cursor-pointer">
+                    <div className="w-6 h-6 lg:w-8 lg:h-8 rounded-md bg-[#0466C8] flex items-center justify-center text-white text-xs lg:text-sm font-black transition-transform duration-300 group-hover:scale-110 shrink-0">4</div>
                     <div className="overflow-hidden">
-                      <h4 className="font-bold text-[#0466C8] text-sm leading-snug mb-2">Visual Flow Maps</h4>
+                      <h4 className="font-bold text-[#0466C8] text-xs lg:text-sm leading-snug mb-1 lg:mb-2">Visual Flow Maps</h4>
                       <div className="h-0.5 bg-[#0466C8] w-8 transition-all duration-500 ease-out group-hover:w-full" />
                     </div>
-                    <p className="text-xs text-[#6B7280] leading-relaxed flex-1">
+                    <p className="text-[10px] lg:text-xs text-[#6B7280] leading-relaxed flex-1 hidden sm:block font-medium">
                       Visualize how personal data flows through APIs and third-party integrations.
                     </p>
                     <button onClick={() => setIsDemoModalOpen(true)} className="flex items-center gap-1.5 text-xs font-bold text-[#0466C8] transition-all duration-200 group-hover:gap-2.5 mt-auto">
@@ -769,41 +797,41 @@ const MainLanding = () => {
             {/* Card 3: DSAR Automation — Blue theme */}
             <motion.div
               style={{ y: productY2 }}
-              className="absolute inset-0 w-full h-full bg-[#3e92cc] flex flex-col justify-center items-center z-30 p-12"
+              className="absolute inset-0 w-full h-full bg-[#3e92cc] flex flex-col justify-center items-center z-30 p-6 md:p-8 lg:p-12"
             >
-              <div className="w-full h-full flex flex-col gap-8 justify-center">
+              <div className="w-full h-full flex flex-col gap-6 lg:gap-8 justify-center">
 
                 {/* Top section */}
-                <div className="flex flex-col lg:flex-row gap-8 items-stretch flex-1 min-h-0">
+                <div className="flex flex-col lg:flex-row gap-4 lg:gap-8 items-stretch flex-1 min-h-0">
 
                   {/* Left: Image placeholder */}
-                  <div className="lg:w-[65%] h-full min-h-[280px] bg-white/10 border border-white/20 rounded-none flex items-center justify-center backdrop-blur-sm">
+                  <div className="order-2 lg:order-1 flex w-full lg:w-[65%] h-32 sm:flex-1 sm:h-auto lg:flex-none lg:h-full min-h-[128px] lg:min-h-[240px] bg-white/10 border border-white/20 rounded-2xl lg:rounded-none items-center justify-center backdrop-blur-sm shrink-0 lg:shrink">
                     <div className="flex flex-col items-center gap-4 text-white/40">
-                      <UserCheck className="w-28 h-28 text-white/30" />
+                      <UserCheck className="w-16 h-16 sm:w-28 sm:h-28 lg:w-28 lg:h-28 text-white/30" />
                     </div>
                   </div>
 
                   {/* Right: Heading + description */}
-                  <div className="lg:w-[45%] flex flex-col justify-start gap-5">
-                    <h3 className="text-2xl md:text-3xl font-semibold text-white leading-tight tracking-tight">
-                      DSAR Automation<br />Portal for Enterprises
+                  <div className="order-1 lg:order-2 lg:w-[45%] flex flex-col justify-center lg:justify-start gap-2 lg:gap-5">
+                    <h3 className="text-2xl md:text-3xl font-semibold text-white leading-tight tracking-tight text-center lg:text-left">
+                      DSAR Automation<br className="hidden lg:block" />Portal for Enterprises
                     </h3>
-                    <p className="text-sm text-blue-100 leading-relaxed max-w-sm">
+                    <p className="hidden lg:block text-sm text-blue-100 leading-relaxed max-w-sm font-medium">
                       Fulfill data subject access requests securely and within regulatory timeframes. Automated identity verification, secure file delivery, and custom templates.
                     </p>
                   </div>
                 </div>
 
                 {/* Bottom: 4 feature columns */}
-                <div className="grid grid-cols-2 lg:grid-cols-4 border-t border-white/20 pt-6 gap-0">
+                <div className="grid grid-cols-2 lg:grid-cols-4 border-t border-white/20 pt-4 lg:pt-6 gap-0">
 
-                  <div className="group flex flex-col gap-4 p-5 min-h-[180px] rounded-xl border border-transparent transition-all duration-300 hover:-translate-y-1 hover:border-white/20 hover:shadow-lg hover:shadow-black/10 hover:bg-white/10 cursor-pointer">
-                    <div className="w-8 h-8 rounded-md bg-white/20 flex items-center justify-center text-white text-sm font-black transition-transform duration-300 group-hover:scale-110 shrink-0">1</div>
+                  <div className="group flex flex-col gap-2 lg:gap-4 p-3 lg:p-5 min-h-[120px] lg:min-h-[180px] rounded-xl border border-transparent transition-all duration-300 hover:-translate-y-1 hover:border-white/20 hover:shadow-lg hover:shadow-black/10 hover:bg-white/10 cursor-pointer">
+                    <div className="w-6 h-6 lg:w-8 lg:h-8 rounded-md bg-white/20 flex items-center justify-center text-white text-xs lg:text-sm font-black transition-transform duration-300 group-hover:scale-110 shrink-0">1</div>
                     <div className="overflow-hidden">
-                      <h4 className="font-bold text-white text-sm leading-snug mb-2">Identity Verification</h4>
+                      <h4 className="font-bold text-white text-xs lg:text-sm leading-snug mb-1 lg:mb-2">Identity Verification</h4>
                       <div className="h-0.5 bg-white w-8 transition-all duration-500 ease-out group-hover:w-full" />
                     </div>
-                    <p className="text-xs text-blue-100 leading-relaxed flex-1">
+                    <p className="text-[10px] lg:text-xs text-blue-100 leading-relaxed flex-1 hidden sm:block font-medium">
                       Validate requestor identity securely using multiple trust vectors before releasing data.
                     </p>
                     <button onClick={() => setIsDemoModalOpen(true)} className="flex items-center gap-1.5 text-xs font-bold text-white transition-all duration-200 group-hover:gap-2.5 mt-auto">
@@ -811,13 +839,13 @@ const MainLanding = () => {
                     </button>
                   </div>
 
-                  <div className="group flex flex-col gap-4 p-5 min-h-[180px] rounded-xl border border-transparent transition-all duration-300 hover:-translate-y-1 hover:border-white/20 hover:shadow-lg hover:shadow-black/10 hover:bg-white/10 cursor-pointer">
-                    <div className="w-8 h-8 rounded-md bg-white/20 flex items-center justify-center text-white text-sm font-black transition-transform duration-300 group-hover:scale-110 shrink-0">2</div>
+                  <div className="group flex flex-col gap-2 lg:gap-4 p-3 lg:p-5 min-h-[120px] lg:min-h-[180px] rounded-xl border border-transparent transition-all duration-300 hover:-translate-y-1 hover:border-white/20 hover:shadow-lg hover:shadow-black/10 hover:bg-white/10 cursor-pointer">
+                    <div className="w-6 h-6 lg:w-8 lg:h-8 rounded-md bg-white/20 flex items-center justify-center text-white text-xs lg:text-sm font-black transition-transform duration-300 group-hover:scale-110 shrink-0">2</div>
                     <div className="overflow-hidden">
-                      <h4 className="font-bold text-white text-sm leading-snug mb-2">Secure File Delivery</h4>
+                      <h4 className="font-bold text-white text-xs lg:text-sm leading-snug mb-1 lg:mb-2">Secure File Delivery</h4>
                       <div className="h-0.5 bg-white w-8 transition-all duration-500 ease-out group-hover:w-full" />
                     </div>
-                    <p className="text-xs text-blue-100 leading-relaxed flex-1">
+                    <p className="text-[10px] lg:text-xs text-blue-100 leading-relaxed flex-1 hidden sm:block font-medium">
                       Encrypted storage and secure download portal with strict expiry policies.
                     </p>
                     <button onClick={() => setIsDemoModalOpen(true)} className="flex items-center gap-1.5 text-xs font-bold text-white transition-all duration-200 group-hover:gap-2.5 mt-auto">
@@ -825,13 +853,13 @@ const MainLanding = () => {
                     </button>
                   </div>
 
-                  <div className="group flex flex-col gap-4 p-5 min-h-[180px] rounded-xl border border-transparent transition-all duration-300 hover:-translate-y-1 hover:border-white/20 hover:shadow-lg hover:shadow-black/10 hover:bg-white/10 cursor-pointer">
-                    <div className="w-8 h-8 rounded-md bg-white/20 flex items-center justify-center text-white text-sm font-black transition-transform duration-300 group-hover:scale-110 shrink-0">3</div>
+                  <div className="group flex flex-col gap-2 lg:gap-4 p-3 lg:p-5 min-h-[120px] lg:min-h-[180px] rounded-xl border border-transparent transition-all duration-300 hover:-translate-y-1 hover:border-white/20 hover:shadow-lg hover:shadow-black/10 hover:bg-white/10 cursor-pointer">
+                    <div className="w-6 h-6 lg:w-8 lg:h-8 rounded-md bg-white/20 flex items-center justify-center text-white text-xs lg:text-sm font-black transition-transform duration-300 group-hover:scale-110 shrink-0">3</div>
                     <div className="overflow-hidden">
-                      <h4 className="font-bold text-white text-sm leading-snug mb-2">Custom Templates</h4>
+                      <h4 className="font-bold text-white text-xs lg:text-sm leading-snug mb-1 lg:mb-2">Custom Templates</h4>
                       <div className="h-0.5 bg-white w-8 transition-all duration-500 ease-out group-hover:w-full" />
                     </div>
-                    <p className="text-xs text-blue-100 leading-relaxed flex-1">
+                    <p className="text-[10px] lg:text-xs text-blue-100 leading-relaxed flex-1 hidden sm:block font-medium">
                       Build branded DSAR response workflows with custom templates per regulation.
                     </p>
                     <button onClick={() => setIsDemoModalOpen(true)} className="flex items-center gap-1.5 text-xs font-bold text-white transition-all duration-200 group-hover:gap-2.5 mt-auto">
@@ -839,13 +867,13 @@ const MainLanding = () => {
                     </button>
                   </div>
 
-                  <div className="group flex flex-col gap-4 p-5 min-h-[180px] rounded-xl border border-transparent transition-all duration-300 hover:-translate-y-1 hover:border-white/20 hover:shadow-lg hover:shadow-black/10 hover:bg-white/10 cursor-pointer">
-                    <div className="w-8 h-8 rounded-md bg-white/20 flex items-center justify-center text-white text-sm font-black transition-transform duration-300 group-hover:scale-110 shrink-0">4</div>
+                  <div className="group flex flex-col gap-2 lg:gap-4 p-3 lg:p-5 min-h-[120px] lg:min-h-[180px] rounded-xl border border-transparent transition-all duration-300 hover:-translate-y-1 hover:border-white/20 hover:shadow-lg hover:shadow-black/10 hover:bg-white/10 cursor-pointer">
+                    <div className="w-6 h-6 lg:w-8 lg:h-8 rounded-md bg-white/20 flex items-center justify-center text-white text-xs lg:text-sm font-black transition-transform duration-300 group-hover:scale-110 shrink-0">4</div>
                     <div className="overflow-hidden">
-                      <h4 className="font-bold text-white text-sm leading-snug mb-2">Deadline Tracking</h4>
+                      <h4 className="font-bold text-white text-xs lg:text-sm leading-snug mb-1 lg:mb-2">Deadline Tracking</h4>
                       <div className="h-0.5 bg-white w-8 transition-all duration-500 ease-out group-hover:w-full" />
                     </div>
-                    <p className="text-xs text-blue-100 leading-relaxed flex-1">
+                    <p className="text-[10px] lg:text-xs text-blue-100 leading-relaxed flex-1 hidden sm:block font-medium">
                       Automated SLA tracking ensures every request is resolved within legal timeframes.
                     </p>
                     <button onClick={() => setIsDemoModalOpen(true)} className="flex items-center gap-1.5 text-xs font-bold text-white transition-all duration-200 group-hover:gap-2.5 mt-auto">
@@ -866,13 +894,10 @@ const MainLanding = () => {
       <section id="features" className="bg-white py-24 border-b border-[#E5E7EB]">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16 max-w-xl mx-auto">
-            <span className="text-[#0466C8] text-xs font-semibold uppercase tracking-wider mb-3 px-3 py-1 bg-blue-50 rounded-full inline-block">
-              Core Capabilities
-            </span>
             <h2 className="text-4xl font-semibold text-[#111827] tracking-tight">
               Platform Features
             </h2>
-            <p className="text-base text-[#6B7280] mt-3">
+            <p className="text-base text-[#6B7280] mt-3 font-medium">
               Powerful, granular capabilities designed to meet the rigorous demands of enterprise privacy teams.
             </p>
           </div>
@@ -881,7 +906,7 @@ const MainLanding = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
 
             {/* Feature 1 (Large) */}
-            <div className="xl:col-span-2 bg-white border border-[#E5E7EB] hover:border-[#0466C8]/40 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 rounded-[2rem] p-8 flex flex-col group relative overflow-hidden h-full">
+            <div className="xl:col-span-2 bg-white border border-[#E5E7EB] hover:border-[#0466C8]/40 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 rounded-[0rem] p-6 lg:p-8 flex flex-col group relative overflow-hidden h-full">
 
               {/* Top: Text Content */}
               <div className="mb-4 relative z-10">
@@ -901,7 +926,7 @@ const MainLanding = () => {
                     </div>
                     <div>
                       <div className="text-xs font-bold text-slate-800">Consent Flow</div>
-                      <div className="text-[10px] text-slate-500">Active Workflow</div>
+                      <div className="text-[10px] text-slate-500 font-medium">Active Workflow</div>
                     </div>
                   </div>
 
@@ -936,14 +961,14 @@ const MainLanding = () => {
 
               {/* Bottom: Description */}
               <div className="mt-4 relative z-10">
-                <p className="text-sm text-[#6B7280] leading-relaxed">
+                <p className="text-base font-medium text-[#374151] leading-relaxed">
                   Collect, track, update, and manage user consent throughout its entire lifecycle.
                 </p>
               </div>
             </div>
 
             {/* Feature 2 (Small) */}
-            <div className="xl:col-span-1 bg-white border border-[#E5E7EB] hover:border-[#0466C8]/40 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 rounded-[2rem] p-8 flex flex-col group relative overflow-hidden h-full">
+            <div className="xl:col-span-1 bg-white border border-[#E5E7EB] hover:border-[#0466C8]/40 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 rounded-[0rem] p-6 lg:p-8 flex flex-col group relative overflow-hidden h-full">
               <div className="mb-4 relative z-10">
                 <h3 className="text-[22px] font-bold text-[#111827] leading-snug tracking-tight">User Rights & Preference Center</h3>
               </div>
@@ -957,7 +982,7 @@ const MainLanding = () => {
                     </div>
                     <div>
                       <div className="text-[11px] font-bold text-slate-800">User Profile</div>
-                      <div className="text-[9px] text-slate-500">Privacy Settings</div>
+                      <div className="text-[9px] text-slate-500 font-medium">Privacy Settings</div>
                     </div>
                   </div>
                   <div className="bg-[#F8FAFC] rounded-xl p-3 space-y-3">
@@ -982,14 +1007,14 @@ const MainLanding = () => {
               </div>
 
               <div className="mt-4 relative z-10">
-                <p className="text-sm text-[#6B7280] leading-relaxed">
+                <p className="text-base font-medium text-[#374151] leading-relaxed">
                   Enable users to easily review, modify, and manage their privacy preferences and consent choices.
                 </p>
               </div>
             </div>
 
             {/* Feature 3 (Small) */}
-            <div className="xl:col-span-1 bg-white border border-[#E5E7EB] hover:border-[#0466C8]/40 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 rounded-[2rem] p-8 flex flex-col group relative overflow-hidden h-full">
+            <div className="xl:col-span-1 bg-white border border-[#E5E7EB] hover:border-[#0466C8]/40 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 rounded-[0rem] p-6 lg:p-8 flex flex-col group relative overflow-hidden h-full">
               <div className="mb-4 relative z-10">
                 <h3 className="text-[22px] font-bold text-[#111827] leading-snug tracking-tight">Vulnerability Assessment & Pentesting</h3>
               </div>
@@ -1007,7 +1032,7 @@ const MainLanding = () => {
                     </div>
                     <div>
                       <div className="text-[11px] font-bold text-slate-800">System Core</div>
-                      <div className="text-[9px] text-slate-500 transition-colors duration-500 group-hover:text-emerald-600">Active Pentest</div>
+                      <div className="text-[9px] text-slate-500 transition-colors duration-500 group-hover:text-emerald-600 font-medium">Active Pentest</div>
                     </div>
                   </div>
 
@@ -1028,14 +1053,14 @@ const MainLanding = () => {
               </div>
 
               <div className="mt-4 relative z-10">
-                <p className="text-sm text-[#6B7280] leading-relaxed">
+                <p className="text-base font-medium text-[#374151] leading-relaxed">
                   Discover and validate security gaps before they can be exploited by attackers.
                 </p>
               </div>
             </div>
 
             {/* Feature 4 (Large) */}
-            <div className="xl:col-span-2 bg-white border border-[#E5E7EB] hover:border-[#0466C8]/40 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 rounded-[2rem] p-8 flex flex-col group relative overflow-hidden h-full">
+            <div className="xl:col-span-2 bg-white border border-[#E5E7EB] hover:border-[#0466C8]/40 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 rounded-[0rem] p-6 lg:p-8 flex flex-col group relative overflow-hidden h-full">
 
               {/* Top: Text Content */}
               <div className="mb-4 relative z-10">
@@ -1092,14 +1117,14 @@ const MainLanding = () => {
 
               {/* Bottom: Description */}
               <div className="mt-4 relative z-10">
-                <p className="text-sm text-[#6B7280] leading-relaxed">
+                <p className="text-base font-medium text-[#374151] leading-relaxed">
                   Receive prioritized remediation guidance to address risks and improve your security posture.
                 </p>
               </div>
             </div>
 
             {/* Feature 5 (Small) */}
-            <div className="xl:col-span-1 bg-white border border-[#E5E7EB] hover:border-[#0466C8]/40 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 rounded-[2rem] p-8 flex flex-col group relative overflow-hidden h-full">
+            <div className="xl:col-span-1 bg-white border border-[#E5E7EB] hover:border-[#0466C8]/40 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 rounded-[0rem] p-6 lg:p-8 flex flex-col group relative overflow-hidden h-full">
               <div className="mb-4 relative z-10">
                 <h3 className="text-[22px] font-bold text-[#111827] leading-snug tracking-tight">Vendor Risk Assessments</h3>
               </div>
@@ -1113,7 +1138,7 @@ const MainLanding = () => {
                     </div>
                     <div>
                       <div className="text-[11px] font-bold text-slate-800">Cloud Provider Inc</div>
-                      <div className="text-[9px] text-slate-500">Security Audit</div>
+                      <div className="text-[9px] text-slate-500 font-medium">Security Audit</div>
                     </div>
                   </div>
                   <div className="bg-[#F8FAFC] rounded-xl p-3">
@@ -1131,14 +1156,14 @@ const MainLanding = () => {
               </div>
 
               <div className="mt-4 relative z-10">
-                <p className="text-sm text-[#6B7280] leading-relaxed">
+                <p className="text-base font-medium text-[#374151] leading-relaxed">
                   Evaluate third-party vendors against security, privacy, and compliance requirements before engagement.
                 </p>
               </div>
             </div>
 
             {/* Feature 6 (Small) */}
-            <div className="xl:col-span-1 bg-white border border-[#E5E7EB] hover:border-[#0466C8]/40 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 rounded-[2rem] p-8 flex flex-col group relative overflow-hidden h-full">
+            <div className="xl:col-span-1 bg-white border border-[#E5E7EB] hover:border-[#0466C8]/40 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 rounded-[0rem] p-6 lg:p-8 flex flex-col group relative overflow-hidden h-full">
               <div className="mb-4 relative z-10">
                 <h3 className="text-[22px] font-bold text-[#111827] leading-snug tracking-tight">Continuous Risk Monitoring</h3>
               </div>
@@ -1153,7 +1178,7 @@ const MainLanding = () => {
                     </div>
                     <div>
                       <div className="text-[11px] font-bold text-slate-800">Live Monitor</div>
-                      <div className="text-[9px] text-slate-500">Global Ecosystem</div>
+                      <div className="text-[9px] text-slate-500 font-medium">Global Ecosystem</div>
                     </div>
                   </div>
 
@@ -1179,7 +1204,7 @@ const MainLanding = () => {
               </div>
 
               <div className="mt-4 relative z-10">
-                <p className="text-sm text-[#6B7280] leading-relaxed">
+                <p className="text-base font-medium text-[#374151] leading-relaxed">
                   Track vendor risks continuously to detect changes and emerging threats across your ecosystem.
                 </p>
               </div>
@@ -1190,70 +1215,53 @@ const MainLanding = () => {
       </section>
 
       {/* 5. Footer */}
-      <footer className="bg-white border-t border-[#E8E1D5] py-16">
-        <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-12 mb-16">
+      <footer className="bg-[#F4F5F6] py-20">
+        <div className="max-w-7xl mx-auto px-6 flex flex-col lg:flex-row justify-between gap-12 lg:gap-24">
 
           {/* Left Column - Brand info */}
-          <div className="lg:col-span-5 flex flex-col gap-6">
-            <div className="flex items-center gap-3">
-              <img src={LogoImg} alt="Logo" className="h-10 w-auto object-contain" />
-            </div>
-            <p className="text-sm text-[#7A6B63] leading-relaxed max-w-sm mt-2">
+          <div className="flex flex-col gap-4 max-w-[280px]">
+            <img src={LogoImg} alt="Logo" className="h-9 w-auto object-contain self-start" />
+            <p className="text-[13px] text-[#6B7280] leading-relaxed font-medium mt-1">
               Help organizations manage privacy operations, automate compliance workflows, and build trust.
             </p>
-            <div className="flex items-center gap-4 mt-2">
-              <a href="#twitter" className="text-[#8C7A70] hover:text-[#5C4033] transition-colors"><Twitter className="w-5 h-5 fill-current" /></a>
-              <a href="#instagram" className="text-[#8C7A70] hover:text-[#5C4033] transition-colors"><Instagram className="w-5 h-5" /></a>
-              <a href="#facebook" className="text-[#8C7A70] hover:text-[#5C4033] transition-colors"><Facebook className="w-5 h-5 fill-current" /></a>
+          </div>
+
+          {/* Right Columns */}
+          <div className="flex flex-wrap md:flex-nowrap gap-12 md:gap-20 lg:gap-24">
+            {/* Column 2 - Products */}
+            <div className="flex flex-col gap-5">
+              <h4 className="text-[13px] font-bold text-[#111827]">Products</h4>
+              <div className="flex flex-col gap-3.5">
+                <a href="#products" className="text-[13px] font-medium text-[#6B7280] hover:text-[#111827] transition-colors">Consent Management</a>
+                <a href="#products" className="text-[13px] font-medium text-[#6B7280] hover:text-[#111827] transition-colors">Data Discovery</a>
+                <a href="#products" className="text-[13px] font-medium text-[#6B7280] hover:text-[#111827] transition-colors">DSAR Automation</a>
+                <a href="#products" className="text-[13px] font-medium text-[#6B7280] hover:text-[#111827] transition-colors">AI Governance Shield</a>
+              </div>
+            </div>
+
+            {/* Column 3 - Solutions */}
+            <div className="flex flex-col gap-5">
+              <h4 className="text-[13px] font-bold text-[#111827]">Solutions</h4>
+              <div className="flex flex-col gap-3.5">
+                <a href="#features" className="text-[13px] font-medium text-[#6B7280] hover:text-[#111827] transition-colors">Privacy Operations</a>
+                <a href="#features" className="text-[13px] font-medium text-[#6B7280] hover:text-[#111827] transition-colors">Compliance Management</a>
+                <a href="#features" className="text-[13px] font-medium text-[#6B7280] hover:text-[#111827] transition-colors">Governance</a>
+                <a href="#features" className="text-[13px] font-medium text-[#6B7280] hover:text-[#111827] transition-colors">Security Architecture</a>
+              </div>
+            </div>
+
+            {/* Column 4 - Support */}
+            <div className="flex flex-col gap-5">
+              <h4 className="text-[13px] font-bold text-[#111827]">Support</h4>
+              <div className="flex flex-col gap-3.5">
+                <a href="#privacy" className="text-[13px] font-medium text-[#6B7280] hover:text-[#111827] transition-colors">Help Center</a>
+                <a href="#terms" className="text-[13px] font-medium text-[#6B7280] hover:text-[#111827] transition-colors">Contact Support</a>
+                <a href="#cookies" className="text-[13px] font-medium text-[#6B7280] hover:text-[#111827] transition-colors">System Status</a>
+                <a href="#contact" className="text-[13px] font-medium text-[#6B7280] hover:text-[#111827] transition-colors">FAQs</a>
+              </div>
             </div>
           </div>
 
-          <div className="lg:col-span-1 hidden lg:block"></div>
-
-          {/* Column 2 - Products */}
-          <div className="lg:col-span-2 flex flex-col gap-5 mt-4 lg:mt-0">
-            <h4 className="text-xs font-bold text-[#5C4033] uppercase tracking-widest">Products</h4>
-            <div className="flex flex-col gap-4">
-              <a href="#products" className="text-[13px] text-[#7A6B63] hover:text-[#5C4033] transition-colors">Consent Management</a>
-              <a href="#products" className="text-[13px] text-[#7A6B63] hover:text-[#5C4033] transition-colors">Data Discovery</a>
-              <a href="#products" className="text-[13px] text-[#7A6B63] hover:text-[#5C4033] transition-colors">DSAR Automation</a>
-              <a href="#products" className="text-[13px] text-[#7A6B63] hover:text-[#5C4033] transition-colors">AI Governance Shield</a>
-            </div>
-          </div>
-
-          {/* Column 3 - Solutions */}
-          <div className="lg:col-span-2 flex flex-col gap-5 mt-4 lg:mt-0">
-            <h4 className="text-xs font-bold text-[#5C4033] uppercase tracking-widest">Solutions</h4>
-            <div className="flex flex-col gap-4">
-              <a href="#features" className="text-[13px] text-[#7A6B63] hover:text-[#5C4033] transition-colors">Privacy Operations</a>
-              <a href="#features" className="text-[13px] text-[#7A6B63] hover:text-[#5C4033] transition-colors">Compliance Management</a>
-              <a href="#features" className="text-[13px] text-[#7A6B63] hover:text-[#5C4033] transition-colors">Governance</a>
-              <a href="#features" className="text-[13px] text-[#7A6B63] hover:text-[#5C4033] transition-colors">Security Architecture</a>
-            </div>
-          </div>
-
-          {/* Column 4 - Legal (Replaces Resources) */}
-          <div className="lg:col-span-2 flex flex-col gap-5 mt-4 lg:mt-0">
-            <h4 className="text-xs font-bold text-[#5C4033] uppercase tracking-widest">Support</h4>
-            <div className="flex flex-col gap-4">
-              <a href="#privacy" className="text-[13px] text-[#7A6B63] hover:text-[#5C4033] transition-colors">Help Center</a>
-              <a href="#terms" className="text-[13px] text-[#7A6B63] hover:text-[#5C4033] transition-colors">Contact Support</a>
-              <a href="#cookies" className="text-[13px] text-[#7A6B63] hover:text-[#5C4033] transition-colors">System Status</a>
-              <a href="#contact" className="text-[13px] text-[#7A6B63] hover:text-[#5C4033] transition-colors">FAQs</a>
-            </div>
-          </div>
-        </div>
-
-        {/* Bottom copyright bar */}
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="pt-6 border-t border-[#D5C9B3] flex flex-col md:flex-row items-center justify-between gap-4 text-[13px] text-[#8C7A70]">
-            <span>© 2026 IGP Trust. All rights reserved.</span>
-            <div className="flex items-center gap-6">
-              <a href="#privacy" className="hover:text-[#5C4033] transition-colors">Privacy Policy</a>
-              <a href="#terms" className="hover:text-[#5C4033] transition-colors">Terms of Service</a>
-              <a href="#cookies" className="hover:text-[#5C4033] transition-colors">Cookie Policy</a>
-            </div>
-          </div>
         </div>
       </footer>
 
